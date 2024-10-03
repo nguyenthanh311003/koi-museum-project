@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Thanh";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">Bank Code</th>
+                    <th class="card-title text-center">Full Name</th>
+                    <th class="card-title text-center">Short Name</th>
+                    <th class="card-title text-center">Address</th>
+                    <th class="card-title text-center">Phone</th>
+                    <th class="card-title text-center">Fax</th>
+                    <th class="card-title text-center">Disable</th>
+                    <th class="card-title text-center"></th>
+                </tr>
+            </thead>
+            <tbody class="tblBanks">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function loadData() {
+        alert("Load data progressing...");
+        $.ajax({
+            url: '@Url.Action("Index", "Users")',
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                alert('Server response: ' + result.message);
+                console.log(result);
+                var html = '';
+                $.each(result.data, function (key, item) {
+                    html += '<tr>';
+                    html += '<td>' + item.name + '</td>';
+                    html += '<td>' + item.email + '</td>';
+                    html += '<td>' + item.password + '</td>';
+                    html += '<td>' + item.role + '</td>';
+                    html += '<td>' + item.address + '</td>';
+                    html += '<td>' + item.phoneNumber + '</td>';
+                    html += '<td>' + item.avatarUrl + '</td>';
+                    html += '</tr>';
+                });
+                $('.tblBanks').html(html);
+            },
+            error: function (xhr, error) {
+                alert(xhr.statusText);
+            }
+        });
+    }
+
+    loadData();
+
+</script>

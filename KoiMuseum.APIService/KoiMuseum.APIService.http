@@ -1,0 +1,6 @@
+@KoiMuseum.APIService_HostAddress = http://localhost:5267
+
+GET {{KoiMuseum.APIService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
