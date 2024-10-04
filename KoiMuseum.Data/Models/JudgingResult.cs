@@ -23,8 +23,6 @@ public partial class JudgingResult
 
     public string? Remarks { get; set; }
 
-    public string? Status { get; set; }
-
     public DateTime? ReviewedAt { get; set; }
 
     public DateTime? CreatedDate { get; set; }

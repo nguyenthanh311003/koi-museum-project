@@ -19,6 +19,8 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
     public virtual DbSet<ContestProcess> ContestProcesses { get; set; }
 
+    public virtual DbSet<ContestRank> ContestRanks { get; set; }
+
     public virtual DbSet<Judge> Judges { get; set; }
 
     public virtual DbSet<JudgingResult> JudgingResults { get; set; }
@@ -39,7 +41,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
     {
         modelBuilder.Entity<Contest>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Contest__3213E83F6BF86014");
+            entity.HasKey(e => e.Id).HasName("PK__Contest__3213E83F1F025047");
 
             entity.ToTable("Contest");
 
@@ -49,43 +51,27 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.Criteria)
-                .HasMaxLength(255)
-                .HasColumnName("criteria");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EndDate).HasColumnName("endDate");
-            entity.Property(e => e.Location)
-                .HasMaxLength(255)
-                .HasColumnName("location");
             entity.Property(e => e.MaxParticipants).HasColumnName("maxParticipants");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
             entity.Property(e => e.NumberOfParticipants).HasColumnName("numberOfParticipants");
-            entity.Property(e => e.Organizer)
-                .HasMaxLength(255)
-                .HasColumnName("organizer");
             entity.Property(e => e.StartDate).HasColumnName("startDate");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
         });
 
         modelBuilder.Entity<ContestProcess>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ContestP__3213E83FA4320983");
+            entity.HasKey(e => e.Id).HasName("PK__ContestP__3213E83F45C36E47");
 
             entity.ToTable("ContestProcess");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AssignedBy)
-                .HasMaxLength(255)
-                .HasColumnName("assignedBy");
-            entity.Property(e => e.AssignedRank)
-                .HasMaxLength(255)
-                .HasColumnName("assignedRank");
             entity.Property(e => e.CheckInStatus)
                 .HasMaxLength(255)
                 .HasColumnName("checkInStatus");
@@ -98,77 +84,77 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.FinalResult)
-                .HasMaxLength(255)
-                .HasColumnName("finalResult");
             entity.Property(e => e.KoiId).HasColumnName("koiId");
-            entity.Property(e => e.Stage)
-                .HasMaxLength(255)
-                .HasColumnName("stage");
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
 
             entity.HasOne(d => d.Contest).WithMany(p => p.ContestProcesses)
                 .HasForeignKey(d => d.ContestId)
-                .HasConstraintName("FK__ContestPr__conte__4BAC3F29");
+                .HasConstraintName("FK_ContestProcess_Contest");
 
             entity.HasOne(d => d.Koi).WithMany(p => p.ContestProcesses)
                 .HasForeignKey(d => d.KoiId)
-                .HasConstraintName("FK__ContestPr__koiId__4CA06362");
+                .HasConstraintName("FK_ContestProcess_RegisterDetail");
+        });
+
+        modelBuilder.Entity<ContestRank>(entity =>
+        {
+            entity.HasKey(e => new { e.ContestId, e.RankId });
+
+            entity.ToTable("ContestRank");
+
+            entity.Property(e => e.ContestId).HasColumnName("contestId");
+            entity.Property(e => e.RankId).HasColumnName("rankId");
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.Contest).WithMany(p => p.ContestRanks)
+                .HasForeignKey(d => d.ContestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContestRank_Contest");
+
+            entity.HasOne(d => d.Rank).WithMany(p => p.ContestRanks)
+                .HasForeignKey(d => d.RankId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContestRank_Rank");
         });
 
         modelBuilder.Entity<Judge>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Judge__3213E83FC5E4C56B");
+            entity.HasKey(e => e.Id).HasName("PK__Judge__3213E83F70047D7B");
 
             entity.ToTable("Judge");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AssignedContests).HasColumnName("assignedContests");
-            entity.Property(e => e.Availability)
-                .HasMaxLength(255)
-                .HasColumnName("availability");
             entity.Property(e => e.Certifications).HasColumnName("certifications");
             entity.Property(e => e.CreatedBy).HasColumnName("createdBy");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .HasColumnName("email");
             entity.Property(e => e.Experience).HasColumnName("experience");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
-            entity.Property(e => e.Specialty)
-                .HasMaxLength(255)
-                .HasColumnName("specialty");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Active")
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
             entity.Property(e => e.UserId).HasColumnName("userId");
 
             entity.HasOne(d => d.User).WithMany(p => p.Judges)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Judge__userId__52593CB8");
+                .HasConstraintName("FK_Judge_User");
         });
 
         modelBuilder.Entity<JudgingResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__JudgingR__3213E83F64327D58");
+            entity.HasKey(e => e.Id).HasName("PK__JudgingR__3213E83F9D801881");
 
             entity.ToTable("JudgingResult");
 
@@ -197,31 +183,27 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
             entity.Property(e => e.ShapeScore)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("shapeScore");
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
 
             entity.HasOne(d => d.Contest).WithMany(p => p.JudgingResults)
                 .HasForeignKey(d => d.ContestId)
-                .HasConstraintName("FK__JudgingRe__conte__5EBF139D");
+                .HasConstraintName("FK_JudgingResult_Contest");
 
             entity.HasOne(d => d.Judge).WithMany(p => p.JudgingResults)
                 .HasForeignKey(d => d.JudgeId)
-                .HasConstraintName("FK__JudgingRe__judge__5CD6CB2B");
+                .HasConstraintName("FK_JudgingResult_Judge");
 
             entity.HasOne(d => d.Koi).WithMany(p => p.JudgingResults)
                 .HasForeignKey(d => d.KoiId)
-                .HasConstraintName("FK__JudgingRe__koiId__5DCAEF64");
+                .HasConstraintName("FK_JudgingResult_RegisterDetail");
         });
 
         modelBuilder.Entity<Rank>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Rank__3213E83FE309956F");
+            entity.HasKey(e => e.Id).HasName("PK__Rank__3213E83F8AD3E33C");
 
             entity.ToTable("Rank");
 
@@ -231,9 +213,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.Criteria)
-                .HasMaxLength(255)
-                .HasColumnName("criteria");
+            entity.Property(e => e.Criteria).HasColumnName("criteria");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.MaxAge).HasColumnName("maxAge");
             entity.Property(e => e.MaxSize).HasColumnName("maxSize");
@@ -243,11 +223,10 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("name");
             entity.Property(e => e.Reward)
-                .HasMaxLength(255)
+                .HasColumnType("decimal(5, 2)")
                 .HasColumnName("reward");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
             entity.Property(e => e.VarietyRestriction)
@@ -257,7 +236,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<RegisterDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Register__3213E83FF30735F1");
+            entity.HasKey(e => e.Id).HasName("PK__Register__3213E83F7E8C3807");
 
             entity.ToTable("RegisterDetail");
 
@@ -269,43 +248,32 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(50)
-                .HasColumnName("gender");
-            entity.Property(e => e.HealthStatus)
-                .HasMaxLength(255)
-                .HasColumnName("healthStatus");
             entity.Property(e => e.OwnerId).HasColumnName("ownerId");
-            entity.Property(e => e.Picture)
-                .HasMaxLength(255)
-                .HasColumnName("picture");
             entity.Property(e => e.RankId).HasColumnName("rankId");
             entity.Property(e => e.Size)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("size");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
-            entity.Property(e => e.Variety)
-                .HasMaxLength(255)
-                .HasColumnName("variety");
 
             entity.HasOne(d => d.Owner).WithMany(p => p.RegisterDetails)
                 .HasForeignKey(d => d.OwnerId)
-                .HasConstraintName("FK__RegisterD__owner__4316F928");
+                .HasConstraintName("FK_RegisterDetail_User");
 
             entity.HasOne(d => d.Rank).WithMany(p => p.RegisterDetails)
                 .HasForeignKey(d => d.RankId)
-                .HasConstraintName("FK__RegisterD__rankI__4222D4EF");
+                .HasConstraintName("FK_RegisterDetail_Rank");
         });
 
         modelBuilder.Entity<Registration>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Registra__3213E83FEFB837F4");
+            entity.HasKey(e => e.Id).HasName("PK__Registra__3213E83F7057616A");
 
             entity.ToTable("Registration");
+
+            entity.HasIndex(e => e.RegisterDetailId, "UQ__Registra__E697F4C420E75971").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AdminReviewedBy)
@@ -324,41 +292,37 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
             entity.Property(e => e.IntroductionOfKoi).HasColumnName("introductionOfKoi");
             entity.Property(e => e.IntroductionOfOwner).HasColumnName("introductionOfOwner");
             entity.Property(e => e.RegisterDetailId).HasColumnName("registerDetailId");
-            entity.Property(e => e.RegistrationDate).HasColumnName("registrationDate");
+            entity.Property(e => e.RegistrationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("registrationDate");
             entity.Property(e => e.RejectedReason).HasColumnName("rejectedReason");
-            entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
 
             entity.HasOne(d => d.Contest).WithMany(p => p.Registrations)
                 .HasForeignKey(d => d.ContestId)
-                .HasConstraintName("FK__Registrat__conte__571DF1D5");
+                .HasConstraintName("FK_Registration_Contest");
 
-            entity.HasOne(d => d.RegisterDetail).WithMany(p => p.Registrations)
-                .HasForeignKey(d => d.RegisterDetailId)
-                .HasConstraintName("FK__Registrat__koiId__5812160E");
+            entity.HasOne(d => d.RegisterDetail).WithOne(p => p.Registration)
+                .HasForeignKey<Registration>(d => d.RegisterDetailId)
+                .HasConstraintName("FK_Registration_RegisterDetail");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FCB361A0B");
+            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FD2DCB6FF");
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.Email, "UQ__User__AB6E6164461AB113").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__User__72E12F1BEA74CEAA").IsUnique();
+
+            entity.HasIndex(e => e.Email, "UQ__User__AB6E616471EBBE1E").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Address)
-                .HasMaxLength(255)
-                .HasColumnName("address");
-            entity.Property(e => e.AvatarUrl)
-                .HasMaxLength(255)
-                .HasColumnName("avatarUrl");
+            entity.Property(e => e.Address).HasColumnName("address");
+            entity.Property(e => e.AvatarUrl).HasColumnName("avatarUrl");
             entity.Property(e => e.CreatedBy).HasColumnName("createdBy");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -375,18 +339,15 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("password");
             entity.Property(e => e.PhoneNumber)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .HasColumnName("phoneNumber");
-            entity.Property(e => e.Role)
-                .HasMaxLength(50)
-                .HasColumnName("role");
+            entity.Property(e => e.Role).HasColumnName("role");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Active")
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
-                .HasDefaultValueSql("(NULL)")
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
         });

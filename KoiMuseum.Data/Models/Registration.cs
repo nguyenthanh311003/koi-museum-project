@@ -11,8 +11,6 @@ public partial class Registration
 
     public int? RegisterDetailId { get; set; }
 
-    public string? Status { get; set; }
-
     public DateOnly? RegistrationDate { get; set; }
 
     public DateOnly? ApprovalDate { get; set; }

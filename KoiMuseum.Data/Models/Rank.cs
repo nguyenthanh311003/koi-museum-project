@@ -9,13 +9,13 @@ public partial class Rank
 
     public string Name { get; set; } = null!;
 
-    public string Criteria { get; set; } = null!;
-
-    public string Reward { get; set; } = null!;
-
     public string? Description { get; set; }
 
     public int? MinSize { get; set; }
+
+    public string? Criteria { get; set; }
+
+    public decimal? Reward { get; set; }
 
     public int? MaxSize { get; set; }
 
@@ -32,6 +32,8 @@ public partial class Rank
     public DateTime? UpdatedDate { get; set; }
 
     public int? UpdatedBy { get; set; }
+
+    public virtual ICollection<ContestRank> ContestRanks { get; set; } = new List<ContestRank>();
 
     public virtual ICollection<RegisterDetail> RegisterDetails { get; set; } = new List<RegisterDetail>();
 }

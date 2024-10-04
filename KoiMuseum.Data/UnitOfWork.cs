@@ -1,10 +1,5 @@
 ﻿using KoiMuseum.Data.Models;
 using KoiMuseum.Data.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KoiMuseum.Data
 {
@@ -12,6 +7,8 @@ namespace KoiMuseum.Data
     {
         private Fa24Se172594Prn231G1KfsContext context;
         private UserRepository repository;
+        private RegisterDetailRepository registerDetailRepository;
+        private RegistrationRepository registrationRepository;
 
         public UnitOfWork()
         {
@@ -19,5 +16,7 @@ namespace KoiMuseum.Data
         }
 
         public UserRepository UserRepository { get { return repository ??= new UserRepository(); } }
+        public RegisterDetailRepository RegisterDetailRepository { get { return registerDetailRepository ??= new RegisterDetailRepository(); } }
+        public RegistrationRepository RegistrationRepository { get { return registrationRepository ??= new RegistrationRepository(); } }
     }
 }
