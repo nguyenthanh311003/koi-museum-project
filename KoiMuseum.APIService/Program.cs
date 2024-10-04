@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRankService, RankService>();
 builder.Services.AddDbContext<Fa24Se172594Prn231G1KfsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Koi_museumDB")));
 
 var app = builder.Build();

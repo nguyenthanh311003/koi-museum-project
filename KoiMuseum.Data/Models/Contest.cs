@@ -15,15 +15,9 @@ public partial class Contest
 
     public DateOnly? EndDate { get; set; }
 
-    public string? Criteria { get; set; }
-
-    public string? Location { get; set; }
-
     public int? NumberOfParticipants { get; set; }
 
     public int? MaxParticipants { get; set; }
-
-    public string? Organizer { get; set; }
 
     public DateTime? CreatedDate { get; set; }
 
@@ -34,6 +28,8 @@ public partial class Contest
     public int? UpdatedBy { get; set; }
 
     public virtual ICollection<ContestProcess> ContestProcesses { get; set; } = new List<ContestProcess>();
+
+    public virtual ICollection<ContestRank> ContestRanks { get; set; } = new List<ContestRank>();
 
     public virtual ICollection<JudgingResult> JudgingResults { get; set; } = new List<JudgingResult>();
 

@@ -11,13 +11,15 @@ namespace KoiMuseum.Data
     public class UnitOfWork
     {
         private Fa24Se172594Prn231G1KfsContext context;
-        private UserRepository repository;
+        private UserRepository userRepository;
+        private RankRepository rankRepository;
 
         public UnitOfWork()
         {
             context ??= new Fa24Se172594Prn231G1KfsContext();
         }
 
-        public UserRepository UserRepository { get { return repository ??= new UserRepository(); } }
+        public UserRepository UserRepository { get { return userRepository ??= new UserRepository(); } }
+        public RankRepository RankRepository { get { return rankRepository ??= new RankRepository(); } }
     }
 }

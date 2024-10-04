@@ -1,0 +1,76 @@
+﻿@model IEnumerable<KoiMuseum.Data.Models.Rank>
+
+@{
+    ViewData["Title"] = "RankList";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rankings</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Rankings</h1>
+        <div class="race-winner">
+            <h2>Daily race winner</h2>
+            <div class="winner-card first-winner">
+                <div class="winner-info">
+                    <h3>#1 First winner</h3>
+                    <p>S. Nurmagedov</p>
+                    <p>120 Completed campaign</p>
+                    <p>€5 Reward earned</p>
+                </div>
+            </div>
+            <div class="winner-card second-winner">
+                <div class="winner-info">
+                    <h3>#2 Second winner</h3>
+                    <p>M. Nusecan</p>
+                    <p>111 Completed campaign</p>
+                    <p>€3 Reward earned</p>
+                </div>
+            </div>
+            <div class="winner-card third-winner">
+                <div class="winner-info">
+                    <h3>#3 Third winner</h3>
+                    <p>S. Nurmagedov</p>
+                    <p>102 Completed campaign</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="race-winner">
+            <h2>Weekly race winner</h2>
+            <div class="winner-card first-winner">
+                <div class="winner-info">
+                    <h3>#1 First winner</h3>
+                    <p>K. Numinar</p>
+                    <p>651 Completed campaign</p>
+                    <p>€30 Reward earned</p>
+                </div>
+            </div>
+            <div class="winner-card second-winner">
+                <div class="winner-info">
+                    <h3>#2 Second winner</h3>
+                    <p>J. Johnson</p>
+                    <p>645 Completed campaign</p>
+                    <p>€15 Reward earned</p>
+                </div>
+            </div>
+            <div class="winner-card third-winner">
+                <div class="winner-info">
+                    <h3>#3 Third winner</h3>
+                    <p>T. Runji</p>
+                    <p>612 Completed campaign</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

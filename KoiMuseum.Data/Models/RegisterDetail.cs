@@ -11,19 +11,11 @@ public partial class RegisterDetail
 
     public int? OwnerId { get; set; }
 
-    public string? Variety { get; set; }
-
-    public string? Picture { get; set; }
-
     public decimal? Size { get; set; }
 
     public int? Age { get; set; }
 
-    public string? Gender { get; set; }
-
     public string? ColorPattern { get; set; }
-
-    public string? HealthStatus { get; set; }
 
     public DateTime? CreatedDate { get; set; }
 
@@ -41,5 +33,5 @@ public partial class RegisterDetail
 
     public virtual Rank? Rank { get; set; }
 
-    public virtual ICollection<Registration> Registrations { get; set; } = new List<Registration>();
+    public virtual Registration? Registration { get; set; }
 }
