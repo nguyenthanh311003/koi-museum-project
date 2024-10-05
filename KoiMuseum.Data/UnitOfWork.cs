@@ -1,16 +1,14 @@
 ﻿using KoiMuseum.Data.Models;
 using KoiMuseum.Data.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KoiMuseum.Data
 {
     public class UnitOfWork
     {
         private Fa24Se172594Prn231G1KfsContext context;
+        private UserRepository repository;
+        private RegisterDetailRepository registerDetailRepository;
+        private RegistrationRepository registrationRepository;
         private UserRepository userRepository;
         private RankRepository rankRepository;
 
@@ -19,6 +17,9 @@ namespace KoiMuseum.Data
             context ??= new Fa24Se172594Prn231G1KfsContext();
         }
 
+        public UserRepository UserRepository { get { return repository ??= new UserRepository(); } }
+        public RegisterDetailRepository RegisterDetailRepository { get { return registerDetailRepository ??= new RegisterDetailRepository(); } }
+        public RegistrationRepository RegistrationRepository { get { return registrationRepository ??= new RegistrationRepository(); } }
         public UserRepository UserRepository { get { return userRepository ??= new UserRepository(); } }
         public RankRepository RankRepository { get { return rankRepository ??= new RankRepository(); } }
     }

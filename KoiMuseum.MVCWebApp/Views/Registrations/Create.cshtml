@@ -1,0 +1,81 @@
+﻿@model KoiMuseum.Data.Models.Registration
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Registration</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ContestId" class="control-label"></label>
+                <select asp-for="ContestId" class ="form-control" asp-items="ViewBag.ContestId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegisterDetailId" class="control-label"></label>
+                <select asp-for="RegisterDetailId" class ="form-control" asp-items="ViewBag.RegisterDetailId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApprovalDate" class="control-label"></label>
+                <input asp-for="ApprovalDate" class="form-control" />
+                <span asp-validation-for="ApprovalDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RejectedReason" class="control-label"></label>
+                <input asp-for="RejectedReason" class="form-control" />
+                <span asp-validation-for="RejectedReason" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmationCode" class="control-label"></label>
+                <input asp-for="ConfirmationCode" class="form-control" />
+                <span asp-validation-for="ConfirmationCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IntroductionOfOwner" class="control-label"></label>
+                <input asp-for="IntroductionOfOwner" class="form-control" />
+                <span asp-validation-for="IntroductionOfOwner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IntroductionOfKoi" class="control-label"></label>
+                <input asp-for="IntroductionOfKoi" class="form-control" />
+                <span asp-validation-for="IntroductionOfKoi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AdminReviewedBy" class="control-label"></label>
+                <input asp-for="AdminReviewedBy" class="form-control" />
+                <span asp-validation-for="AdminReviewedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedBy" class="control-label"></label>
+                <input asp-for="CreatedBy" class="form-control" />
+                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedDate" class="control-label"></label>
+                <input asp-for="UpdatedDate" class="form-control" />
+                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedBy" class="control-label"></label>
+                <input asp-for="UpdatedBy" class="form-control" />
+                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
