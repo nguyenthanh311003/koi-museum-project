@@ -41,7 +41,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
     {
         modelBuilder.Entity<Contest>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Contest__3213E83F1F025047");
+            entity.HasKey(e => e.Id).HasName("PK__Contest__3213E83F13A34451");
 
             entity.ToTable("Contest");
 
@@ -67,7 +67,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<ContestProcess>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ContestP__3213E83F45C36E47");
+            entity.HasKey(e => e.Id).HasName("PK__ContestP__3213E83F5B25355B");
 
             entity.ToTable("ContestProcess");
 
@@ -124,7 +124,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<Judge>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Judge__3213E83F70047D7B");
+            entity.HasKey(e => e.Id).HasName("PK__Judge__3213E83FE26385DB");
 
             entity.ToTable("Judge");
 
@@ -154,7 +154,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<JudgingResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__JudgingR__3213E83F9D801881");
+            entity.HasKey(e => e.Id).HasName("PK__JudgingR__3213E83F0749CF43");
 
             entity.ToTable("JudgingResult");
 
@@ -203,7 +203,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<Rank>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Rank__3213E83F8AD3E33C");
+            entity.HasKey(e => e.Id).HasName("PK__Rank__3213E83F8A549FC8");
 
             entity.ToTable("Rank");
 
@@ -236,7 +236,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<RegisterDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Register__3213E83F7E8C3807");
+            entity.HasKey(e => e.Id).HasName("PK__Register__3213E83F74324DC2");
 
             entity.ToTable("RegisterDetail");
 
@@ -269,11 +269,11 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<Registration>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Registra__3213E83F7057616A");
+            entity.HasKey(e => e.Id).HasName("PK__Registra__3213E83F12224D70");
 
             entity.ToTable("Registration");
 
-            entity.HasIndex(e => e.RegisterDetailId, "UQ__Registra__E697F4C420E75971").IsUnique();
+            entity.HasIndex(e => e.RegisterDetailId, "UQ__Registra__E697F4C4A0B58C77").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AdminReviewedBy)
@@ -312,13 +312,13 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FD2DCB6FF");
+            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FF6F8AC11");
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.Name, "UQ__User__72E12F1BEA74CEAA").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__User__72E12F1BD99883E2").IsUnique();
 
-            entity.HasIndex(e => e.Email, "UQ__User__AB6E616471EBBE1E").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__User__AB6E61644CAFD7FB").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Address).HasColumnName("address");
