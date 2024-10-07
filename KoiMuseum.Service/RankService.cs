@@ -49,22 +49,30 @@ namespace KoiMuseum.Service
                 var countRegisterDetailByRankId = await _unitOfWork.RegisterDetailRepository.CountRegisterDetailByRankId(rank.Id);
 
                 var getContestRank = await _unitOfWork.ContestRankRepository.GetContestRankByContestIdAndRankId(getContestByStatus.Id, rank.Id);
-                var rankResponse = new RanksResponse
+
+                if (getContestRank == null)
                 {
-                    Id = rank.Id,
-                    Name = rank.Name,
-                    Participants = countRegisterDetailByRankId,
-                    Description = rank.Description,
-                    Criteria = rank.Criteria,
-                    Reward = (decimal)rank.Reward,
-                    MinSize = rank.MinSize,
-                    MaxSize = rank.MaxSize,
-                    MinAge = rank.MinAge,
-                    MaxAge = rank.MaxAge,
-                    Status = getContestRank.Status,
-                    VarietyRestriction = rank.VarietyRestriction,
-                };
-                ranksResponses.Add(rankResponse);
+                    continue;
+                } else
+                {
+                    var rankResponse = new RanksResponse
+                    {
+                        Id = rank.Id,
+                        Name = rank.Name,
+                        Participants = countRegisterDetailByRankId,
+                        Description = rank.Description,
+                        Criteria = rank.Criteria,
+                        ContestName = getContestByStatus.Name,
+                        Reward = (decimal)rank.Reward,
+                        MinSize = rank.MinSize,
+                        MaxSize = rank.MaxSize,
+                        MinAge = rank.MinAge,
+                        MaxAge = rank.MaxAge,
+                        Status = getContestRank.Status,
+                        VarietyRestriction = rank.VarietyRestriction,
+                    };
+                    ranksResponses.Add(rankResponse);
+                } 
             }
 
             return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, ranksResponses);

@@ -107,7 +107,7 @@ h1 {
                 <tbody>
                     @foreach (var rank in Model)
                     {
-                        <tr>
+                        <tr onclick="location.href='@Url.Action("RegistrationsOfRank", "Registrations", new { name = rank.Name, contestName = rank.ContestName })'">
                             <td data-label="Class">
                                 <div class="project-info">
                                     <img src="path/to/image1.png" alt="Project 1">

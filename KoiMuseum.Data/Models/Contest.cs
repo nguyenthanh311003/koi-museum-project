@@ -21,7 +21,6 @@ public partial class Contest
     public int? CreatedBy { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
-    string? Status { get; set; }
 
     public int? UpdatedBy { get; set; }
 

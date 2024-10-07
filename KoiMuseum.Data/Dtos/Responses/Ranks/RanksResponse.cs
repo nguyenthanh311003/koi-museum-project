@@ -12,6 +12,8 @@ namespace KoiMuseum.Data.Dtos.Responses.Ranks
 
         public string Name { get; set; } = null!;
 
+        public string ContestName {  get; set; } = null!;
+
         public string Criteria { get; set; } = null!;
 
         public decimal Reward { get; set; }

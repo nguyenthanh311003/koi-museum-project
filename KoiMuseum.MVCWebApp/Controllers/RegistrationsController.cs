@@ -37,6 +37,34 @@ namespace KoiMuseum.MVCWebApp.Controllers
 
             return View(new List<RegistrationResponse>());
         }
+
+        public async Task<IActionResult> RegistrationsOfRank(string name, string contestName)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var queryString = $"?name={Uri.EscapeDataString(name)}&contestName={Uri.EscapeDataString(contestName)}";
+
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations/Registrationss");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var data = JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
+                        return View(data);
+                    }
+                }
+            }
+
+            return View(new List<RegistrationResponse>());
+
+            /*ViewBag.RankName = name;
+            ViewBag.ContestName = contestName;
+
+            return View();*/
+        }
+
         public IActionResult Search(string searchString)
         {
             // Store the current search string for use in the view
