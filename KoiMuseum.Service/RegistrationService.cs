@@ -1,6 +1,7 @@
 ﻿using KoiMuseum.Common;
 using KoiMuseum.Data;
 using KoiMuseum.Data.Dtos.Responses.Registration;
+using KoiMuseum.Data.Filters;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service.Base;
 namespace KoiMuseum.Service
@@ -9,6 +10,7 @@ namespace KoiMuseum.Service
     {
         Task<IServiceResult> GetAll();
         Task<IServiceResult> GetAllV2();
+        Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter);
         Task<IServiceResult> GetById(int id);
 
         /// <summary>
@@ -222,5 +224,46 @@ namespace KoiMuseum.Service
                 return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
             }
         }
+
+        public async Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter)
+        {
+            try
+            {
+                var registrations = await _unitOfWork.RegistrationRepository.SearchRegistrationsAsync(searchRegistrationFilter);
+
+                if (registrations == null || !registrations.Any())
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+                }
+
+                var response = registrations.Select(r => new RegistrationResponse
+                {
+                    Id = r.Id,
+                    ImageUrl = null,
+                    Size = r.RegisterDetail?.Size,
+                    Age = r.RegisterDetail?.Age,
+                    OwnerName = r.RegisterDetail?.Owner?.Name,
+                    Rank = r.RegisterDetail?.Rank?.Name,
+                    ContestName = r.Contest?.Name,
+                    RegistrationDate = r.CreatedDate,
+                    ApprovalDate = r.ApprovalDate,
+                    RejectedReason = r.RejectedReason,
+                    ConfirmationCode = r.ConfirmationCode,
+                    IntroductionOfOwner = r.IntroductionOfOwner,
+                    IntroductionOfKoi = r.IntroductionOfKoi,
+                    Status = r.Status,
+                    AdminReviewedBy = r.AdminReviewedBy,
+                    UpdatedDate = r.RegisterDetail?.UpdatedDate,
+                    UpdatedBy = r.RegisterDetail?.UpdatedBy
+                }).ToList();
+
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+            } catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+            
+        }
+
     }
 }

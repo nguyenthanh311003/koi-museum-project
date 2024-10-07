@@ -35,19 +35,45 @@ namespace KoiMuseum.Service
                 return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
             }
 
-            List<RanksResponse> ranksResponses = ranks.Select(rank => new RanksResponse
+            var ranksResponses = new List<RanksResponse>();
+
+            var getContestByStatus = await _unitOfWork.ContestRepository.GetContestByStatus("ACTIVE");
+
+            if (getContestByStatus == null)
             {
-                Id = rank.Id,
-                Name = rank.Name,
-                Description = rank.Description,
-                Criteria = rank.Criteria,
-                Reward = (decimal) rank.Reward,
-                MinSize = rank.MinSize,
-                MaxSize = rank.MaxSize,
-                MinAge = rank.MinAge,
-                MaxAge = rank.MaxAge,
-                VarietyRestriction = rank.VarietyRestriction,
-            }).ToList();
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+            }
+
+            foreach (var rank in ranks)
+            {
+                var countRegisterDetailByRankId = await _unitOfWork.RegisterDetailRepository.CountRegisterDetailByRankId(rank.Id);
+
+                var getContestRank = await _unitOfWork.ContestRankRepository.GetContestRankByContestIdAndRankId(getContestByStatus.Id, rank.Id);
+
+                if (getContestRank == null)
+                {
+                    continue;
+                } else
+                {
+                    var rankResponse = new RanksResponse
+                    {
+                        Id = rank.Id,
+                        Name = rank.Name,
+                        Participants = countRegisterDetailByRankId,
+                        Description = rank.Description,
+                        Criteria = rank.Criteria,
+                        ContestName = getContestByStatus.Name,
+                        Reward = (decimal)rank.Reward,
+                        MinSize = rank.MinSize,
+                        MaxSize = rank.MaxSize,
+                        MinAge = rank.MinAge,
+                        MaxAge = rank.MaxAge,
+                        Status = getContestRank.Status,
+                        VarietyRestriction = rank.VarietyRestriction,
+                    };
+                    ranksResponses.Add(rankResponse);
+                } 
+            }
 
             return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, ranksResponses);
         }

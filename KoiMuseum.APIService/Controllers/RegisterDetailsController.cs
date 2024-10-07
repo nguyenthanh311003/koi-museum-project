@@ -23,6 +23,13 @@ namespace KoiMuseum.APIService.Controllers
             return await _registerDetailService.GetAll();
         }
 
+        // GET: api/RegisterDetails/rank/5
+        [HttpGet("rank/{rankId}")]
+        public async Task<IServiceResult> GetRegisterDetailsByRankId(int rankId)
+        {
+            return await _registerDetailService.GetsByRankId(rankId);
+        }
+
         // GET: api/RegisterDetails/5
         [HttpGet("{id}")]
         public async Task<IServiceResult> GetRegisterDetail(int id)

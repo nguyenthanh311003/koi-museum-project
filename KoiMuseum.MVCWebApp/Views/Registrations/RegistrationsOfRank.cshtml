@@ -1,0 +1,65 @@
+﻿@model IEnumerable<KoiMuseum.Data.Dtos.Responses.Registration.RegistrationResponse>
+
+@{
+    ViewData["Title"] = "Registration List Of Rank";
+}
+
+<h1>Registrations for @ViewBag.RankName in @ViewBag.ContestName</h1>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4">
+            <div class="card">
+                <img class="card-img-top" src="@item.ImageUrl" alt="@item.ImageUrl">
+                <div class="card-body">
+                    <h5 class="card-title">@item.ContestName</h5>
+                    <p class="card-text">Species: @item.ContestName</p>
+                    <p class="card-text">Owner: @item.OwnerName</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .col-md-4 {
+        flex: 0 0 30%;
+        max-width: 30%;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+
+    .card-body {
+        padding: 10px 0;
+    }
+
+    .card-title {
+        font-size: 1.25em;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        font-size: 1em;
+        color: #555;
+    }
+</style>
