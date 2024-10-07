@@ -110,11 +110,11 @@ namespace KoiMuseum.Service
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                    if (result != null && result.Data != null)
-                    {
-                        return JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
-                    }
+                    //var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    //if (result != null && result.Data != null)
+                    //{
+                    //    return JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
+                    //}
                 }
             }
 
