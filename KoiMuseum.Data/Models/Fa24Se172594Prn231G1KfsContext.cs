@@ -41,7 +41,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
     {
         modelBuilder.Entity<Contest>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Contest__3213E83F13A34451");
+            entity.HasKey(e => e.Id).HasName("PK__Contest__3213E83F1F025047");
 
             entity.ToTable("Contest");
 
@@ -59,6 +59,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.NumberOfParticipants).HasColumnName("numberOfParticipants");
             entity.Property(e => e.StartDate).HasColumnName("startDate");
+            entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
                 .HasColumnType("datetime")
@@ -67,7 +68,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<ContestProcess>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ContestP__3213E83F5B25355B");
+            entity.HasKey(e => e.Id).HasName("PK__ContestP__3213E83F45C36E47");
 
             entity.ToTable("ContestProcess");
 
@@ -124,7 +125,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<Judge>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Judge__3213E83FE26385DB");
+            entity.HasKey(e => e.Id).HasName("PK__Judge__3213E83F70047D7B");
 
             entity.ToTable("Judge");
 
@@ -154,7 +155,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<JudgingResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__JudgingR__3213E83F0749CF43");
+            entity.HasKey(e => e.Id).HasName("PK__JudgingR__3213E83F9D801881");
 
             entity.ToTable("JudgingResult");
 
@@ -203,7 +204,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<Rank>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Rank__3213E83F8A549FC8");
+            entity.HasKey(e => e.Id).HasName("PK__Rank__3213E83F8AD3E33C");
 
             entity.ToTable("Rank");
 
@@ -236,27 +237,34 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<RegisterDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Register__3213E83F74324DC2");
+            entity.HasKey(e => e.Id).HasName("PK__Register__3213E83F7E8C3807");
 
             entity.ToTable("RegisterDetail");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Age).HasColumnName("age");
-            entity.Property(e => e.ColorPattern).HasColumnName("colorPattern");
             entity.Property(e => e.CreatedBy).HasColumnName("createdBy");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
+            entity.Property(e => e.Gender)
+                .HasMaxLength(50)
+                .HasColumnName("gender");
+            entity.Property(e => e.ImageUrl).HasColumnName("imageUrl");
+            entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.OwnerId).HasColumnName("ownerId");
             entity.Property(e => e.RankId).HasColumnName("rankId");
             entity.Property(e => e.Size)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("size");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Type).HasColumnName("type");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updatedDate");
+            entity.Property(e => e.Weight).HasColumnName("weight");
 
             entity.HasOne(d => d.Owner).WithMany(p => p.RegisterDetails)
                 .HasForeignKey(d => d.OwnerId)
@@ -269,11 +277,11 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<Registration>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Registra__3213E83F12224D70");
+            entity.HasKey(e => e.Id).HasName("PK__Registra__3213E83F7057616A");
 
             entity.ToTable("Registration");
 
-            entity.HasIndex(e => e.RegisterDetailId, "UQ__Registra__E697F4C4A0B58C77").IsUnique();
+            entity.HasIndex(e => e.RegisterDetailId, "UQ__Registra__E697F4C420E75971").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AdminReviewedBy)
@@ -296,6 +304,12 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnName("registrationDate");
             entity.Property(e => e.RejectedReason).HasColumnName("rejectedReason");
+            entity.Property(e => e.Remark)
+                .HasMaxLength(10)
+                .HasColumnName("remark");
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
                 .HasColumnType("datetime")
@@ -312,13 +326,13 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FF6F8AC11");
+            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FD2DCB6FF");
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.Name, "UQ__User__72E12F1BD99883E2").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__User__72E12F1BEA74CEAA").IsUnique();
 
-            entity.HasIndex(e => e.Email, "UQ__User__AB6E61644CAFD7FB").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__User__AB6E616471EBBE1E").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Address).HasColumnName("address");

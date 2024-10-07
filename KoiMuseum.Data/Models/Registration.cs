@@ -1,4 +1,7 @@
-﻿namespace KoiMuseum.Data.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace KoiMuseum.Data.Models;
 
 public partial class Registration
 {
@@ -21,6 +24,8 @@ public partial class Registration
     public string? IntroductionOfKoi { get; set; }
 
     public string? AdminReviewedBy { get; set; }
+
+    public string? Remark { get; set; }
 
     public string? Status { get; set; }
 

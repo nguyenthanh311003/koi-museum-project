@@ -1,4 +1,7 @@
-﻿namespace KoiMuseum.Data.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace KoiMuseum.Data.Models;
 
 public partial class Contest
 {
@@ -21,9 +24,10 @@ public partial class Contest
     public int? CreatedBy { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
-    string? Status { get; set; }
 
     public int? UpdatedBy { get; set; }
+
+    public string? Status { get; set; }
 
     public virtual ICollection<ContestProcess> ContestProcesses { get; set; } = new List<ContestProcess>();
 
