@@ -59,6 +59,7 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.NumberOfParticipants).HasColumnName("numberOfParticipants");
             entity.Property(e => e.StartDate).HasColumnName("startDate");
+            entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.UpdatedBy).HasColumnName("updatedBy");
             entity.Property(e => e.UpdatedDate)
                 .HasColumnType("datetime")

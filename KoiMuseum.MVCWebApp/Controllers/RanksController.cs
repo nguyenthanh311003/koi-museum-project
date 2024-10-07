@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KoiMuseum.Data.Models;
+using KoiMuseum.Common;
+using KoiMuseum.Service.Base;
+using Newtonsoft.Json;
+using KoiMuseum.Data.Dtos.Responses.Ranks;
 
 namespace KoiMuseum.MVCWebApp.Controllers
 {
@@ -21,7 +25,22 @@ namespace KoiMuseum.MVCWebApp.Controllers
         // GET: Ranks
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Ranks.ToListAsync());
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Ranks");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var data = JsonConvert.DeserializeObject<List<RanksResponse>>(result.Data.ToString());
+                        return View(data);
+                    }
+                }
+            }
+
+            return View(new List<RanksResponse>());
         }
 
         // GET: Ranks/Details/5

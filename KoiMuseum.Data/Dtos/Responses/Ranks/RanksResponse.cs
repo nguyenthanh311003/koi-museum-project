@@ -26,6 +26,10 @@ namespace KoiMuseum.Data.Dtos.Responses.Ranks
 
         public int? MaxAge { get; set; }
 
+        public int Participants { get; set; }
+
+        public string Status { get; set; }
+
         public string? VarietyRestriction { get; set; }
     }
 }

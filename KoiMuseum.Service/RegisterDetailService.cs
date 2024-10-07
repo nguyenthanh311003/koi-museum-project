@@ -1,7 +1,11 @@
 ﻿using KoiMuseum.Common;
 using KoiMuseum.Data;
+using KoiMuseum.Data.Dtos.Responses.RegisterDetails;
 using KoiMuseum.Data.Models;
+using KoiMuseum.Data.Repositories;
 using KoiMuseum.Service.Base;
+using System.Collections;
+using System.Drawing;
 
 namespace KoiMuseum.Service
 {
@@ -11,6 +15,9 @@ namespace KoiMuseum.Service
         Task<IServiceResult> GetById(int id);
         Task<IServiceResult> Save(RegisterDetail registerDetail);
         Task<IServiceResult> DeleteById(int id);
+
+        Task<IServiceResult> CountParticipants(int rankId);
+        Task<IServiceResult> GetsByRankId(int rankId);
     }
 
     public class RegisterDetailService : IRegisterDetailService
@@ -20,6 +27,19 @@ namespace KoiMuseum.Service
         public RegisterDetailService()
         {
             _unitOfWork ??= new UnitOfWork();
+        }
+
+        public async Task<IServiceResult> CountParticipants(int rankId)
+        {
+            try
+            {
+                var countRegisterDetailByRankId = await _unitOfWork.RegisterDetailRepository.CountRegisterDetailByRankId(rankId);
+
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, countRegisterDetailByRankId);
+            } catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
         }
 
         public async Task<IServiceResult> DeleteById(int id)
@@ -60,6 +80,36 @@ namespace KoiMuseum.Service
             return registerDetailById == null
                 ? new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG)
                 : new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registerDetailById);
+        }
+
+        public async Task<IServiceResult> GetsByRankId(int rankId)
+        {
+            try
+            {
+                var registerDetais = await _unitOfWork.RegisterDetailRepository.getRegisterDetailsByRankId(rankId);
+                var registerDetailResponses = new List<GetRegisterDetailByRankIdResponse>();
+
+                foreach (var item in registerDetais)
+                {
+                    var getRegisterDetailByRankIdResponse = new GetRegisterDetailByRankIdResponse
+                    {
+                        Id = item.Id,
+                        RankId = (int) item.RankId,
+                        OwnerId = (int) item.OwnerId,
+                        Size = (int) item.Size,
+                        Age = (int) item.Age,
+                        ColorPattern = item.ColorPattern
+                    };
+                    registerDetailResponses.Add(getRegisterDetailByRankIdResponse);
+                }
+
+                return registerDetais == null || registerDetais.Count() == 0 
+                    ? new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG)
+                    : new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registerDetailResponses);
+            } catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
         }
 
         public async Task<IServiceResult> Save(RegisterDetail registerDetail)

@@ -27,6 +27,8 @@ public partial class Contest
 
     public int? UpdatedBy { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual ICollection<ContestProcess> ContestProcesses { get; set; } = new List<ContestProcess>();
 
     public virtual ICollection<ContestRank> ContestRanks { get; set; } = new List<ContestRank>();
