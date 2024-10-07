@@ -20,7 +20,6 @@ namespace KoiMuseum.Data
         public UserRepository UserRepository { get { return repository ??= new UserRepository(); } }
         public RegisterDetailRepository RegisterDetailRepository { get { return registerDetailRepository ??= new RegisterDetailRepository(); } }
         public RegistrationRepository RegistrationRepository { get { return registrationRepository ??= new RegistrationRepository(); } }
-        public UserRepository UserRepository { get { return userRepository ??= new UserRepository(); } }
         public RankRepository RankRepository { get { return rankRepository ??= new RankRepository(); } }
     }
 }
