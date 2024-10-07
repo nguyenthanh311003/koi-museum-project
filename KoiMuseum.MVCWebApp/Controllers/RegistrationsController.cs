@@ -47,13 +47,13 @@ namespace KoiMuseum.MVCWebApp.Controllers
                                 select r;
 
             // Filter by search string
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                registrations = registrations.Where(r =>
-                    r..Contains(searchString) ||
-                    r.Rank.Contains(searchString) ||
-                    r.ContestName.Contains(searchString));
-            }
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    registrations = registrations.Where(r =>
+            //        r..Contains(searchString) ||
+            //        r.Rank.Contains(searchString) ||
+            //        r.ContestName.Contains(searchString));
+            //}
 
             // Return filtered results
             return View(registrations.ToList());
