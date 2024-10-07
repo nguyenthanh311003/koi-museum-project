@@ -1,0 +1,107 @@
+﻿@model IEnumerable<KoiMuseum.Data.Models.Registration>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RegistrationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApprovalDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RejectedReason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ConfirmationCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IntroductionOfOwner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IntroductionOfKoi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AdminReviewedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contest)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegisterDetail)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistrationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovalDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RejectedReason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ConfirmationCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IntroductionOfOwner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IntroductionOfKoi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AdminReviewedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contest.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegisterDetail.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

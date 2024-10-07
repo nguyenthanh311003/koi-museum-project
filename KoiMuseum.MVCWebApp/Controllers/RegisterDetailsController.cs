@@ -1,4 +1,5 @@
 ﻿using KoiMuseum.Common;
+using KoiMuseum.Data.Dtos.Responses.Registration;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -28,13 +29,13 @@ namespace KoiMuseum.MVCWebApp.Controllers
                     var result = JsonConvert.DeserializeObject<ServiceResult>(content);
                     if (result != null && result.Data != null)
                     {
-                        var data = JsonConvert.DeserializeObject<List<RegisterDetail>>(result.Data.ToString());
+                        var data = JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
                         return View(data);
                     }
                 }
             }
 
-            return View(new List<RegisterDetail>());
+            return View(new List<RegistrationResponse>());
         }
 
         // GET: RegisterDetails/Details/5

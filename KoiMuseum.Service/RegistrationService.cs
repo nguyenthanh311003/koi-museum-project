@@ -1,13 +1,14 @@
 ﻿using KoiMuseum.Common;
 using KoiMuseum.Data;
+using KoiMuseum.Data.Dtos.Responses.Registration;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service.Base;
-
 namespace KoiMuseum.Service
 {
     public interface IRegistrationService
     {
         Task<IServiceResult> GetAll();
+        Task<IServiceResult> GetAllV2();
         Task<IServiceResult> GetById(int id);
         Task<IServiceResult> Save(Registration registration);
         Task<IServiceResult> DeleteById(int id);
@@ -53,6 +54,73 @@ namespace KoiMuseum.Service
                 ? new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG)
                 : new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registrations);
         }
+        public async Task<IServiceResult> GetAllV2()
+        {
+            // Get all registrations and include necessary related entities
+            var registrations = await _unitOfWork.RegistrationRepository.GetAllAsync("RegisterDetail.Owner", "Contest");
+
+            if (registrations == null || !registrations.Any())
+            {
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+            }
+
+            // Project the result to include OwnerName instead of OwnerId
+            var response = registrations.Select(r => new RegistrationResponse
+            {
+                Id = r.Id,
+                ImageUrl = null,  // Assuming no image URL provided
+                Size = r.RegisterDetail?.Size,
+                Age = r.RegisterDetail?.Age,
+                ColorPattern = r.RegisterDetail?.ColorPattern,
+                OwnerName = r.RegisterDetail?.Owner?.Name,  // Check if Owner and Name exist
+                Rank = r.RegisterDetail?.Rank?.Name,  // Check if Rank exists
+                ContestName = r.Contest?.Name,  // Check if Contest exists
+                RegistrationDate = r.CreatedDate,  // Corrected to use RegistrationDate
+                ApprovalDate = r.ApprovalDate,
+                RejectedReason = r.RejectedReason,
+                ConfirmationCode = r.ConfirmationCode,
+                IntroductionOfOwner = r.IntroductionOfOwner,
+                IntroductionOfKoi = r.IntroductionOfKoi,
+                Status = r.Status,
+                AdminReviewedBy = r.AdminReviewedBy,
+                UpdatedDate = r.RegisterDetail?.UpdatedDate,
+                UpdatedBy = r.RegisterDetail?.UpdatedBy
+            }).ToList();
+
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+        }
+
+        public async Task<List<RegistrationResponse>> SearchRegistrations(string ownerName, string contestName, string status, string rank, string colorPattern, DateOnly? approvalDate, string confirmationCode)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var queryParams = new List<string>();
+
+                if (!string.IsNullOrEmpty(ownerName)) queryParams.Add($"ownerName={ownerName}");
+                if (!string.IsNullOrEmpty(contestName)) queryParams.Add($"contestName={contestName}");
+                if (!string.IsNullOrEmpty(status)) queryParams.Add($"status={status}");
+                if (!string.IsNullOrEmpty(rank)) queryParams.Add($"rank={rank}");
+                if (!string.IsNullOrEmpty(colorPattern)) queryParams.Add($"colorPattern={colorPattern}");
+                if (approvalDate.HasValue) queryParams.Add($"approvalDate={approvalDate.Value}");
+                if (!string.IsNullOrEmpty(confirmationCode)) queryParams.Add($"confirmationCode={confirmationCode}");
+
+                var queryString = string.Join("&", queryParams);
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations/search" + (queryParams.Count > 0 ? "?" + queryString : ""));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    //var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    //if (result != null && result.Data != null)
+                    //{
+                    //    return JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
+                    //}
+                }
+            }
+
+            return new List<RegistrationResponse>();
+        }
+
 
         public async Task<IServiceResult> GetById(int id)
         {

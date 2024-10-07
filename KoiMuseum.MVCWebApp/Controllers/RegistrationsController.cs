@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KoiMuseum.Common;
+using KoiMuseum.Data.Dtos.Responses.Registration;
+using KoiMuseum.Data.Models;
+using KoiMuseum.Service.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KoiMuseum.Data.Models;
+using Newtonsoft.Json;
 
 namespace KoiMuseum.MVCWebApp.Controllers
 {
@@ -21,8 +20,43 @@ namespace KoiMuseum.MVCWebApp.Controllers
         // GET: Registrations
         public async Task<IActionResult> Index()
         {
-            var fa24Se172594Prn231G1KfsContext = _context.Registrations.Include(r => r.Contest).Include(r => r.RegisterDetail);
-            return View(await fa24Se172594Prn231G1KfsContext.ToListAsync());
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var data = JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
+                        return View(data);
+                    }
+                }
+            }
+
+            return View(new List<RegistrationResponse>());
+        }
+        public IActionResult Search(string searchString)
+        {
+            // Store the current search string for use in the view
+            ViewData["CurrentFilter"] = searchString;
+
+            // Get all registrations
+            var registrations = from r in _context.Registrations
+                                select r;
+
+            // Filter by search string
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                registrations = registrations.Where(r =>
+                    r..Contains(searchString) ||
+                    r.Rank.Contains(searchString) ||
+                    r.ContestName.Contains(searchString));
+            }
+
+            // Return filtered results
+            return View(registrations.ToList());
         }
 
         // GET: Registrations/Details/5
@@ -33,20 +67,26 @@ namespace KoiMuseum.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var registration = await _context.Registrations
-                .Include(r => r.Contest)
-                .Include(r => r.RegisterDetail)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (registration == null)
+            using (var httpClient = new HttpClient())
             {
-                return NotFound();
+                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var registration = JsonConvert.DeserializeObject<RegistrationResponse>(result.Data.ToString());
+                        return View(registration);
+                    }
+                }
             }
 
-            return View(registration);
+            return NotFound();
         }
 
         // GET: Registrations/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name");
             ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id");
@@ -54,18 +94,25 @@ namespace KoiMuseum.MVCWebApp.Controllers
         }
 
         // POST: Registrations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(registration);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                using (var httpClient = new HttpClient())
+                {
+                    var json = JsonConvert.SerializeObject(registration);
+                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                    var response = await httpClient.PostAsync(Const.APIEndPoint + "Registrations", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
             }
+
             ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
             ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
             return View(registration);
@@ -79,19 +126,27 @@ namespace KoiMuseum.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var registration = await _context.Registrations.FindAsync(id);
-            if (registration == null)
+            using (var httpClient = new HttpClient())
             {
-                return NotFound();
+                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
+                        ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
+                        ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
+                        return View(registration);
+                    }
+                }
             }
-            ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
-            ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
-            return View(registration);
+
+            return NotFound();
         }
 
         // POST: Registrations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
@@ -103,24 +158,19 @@ namespace KoiMuseum.MVCWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                using (var httpClient = new HttpClient())
                 {
-                    _context.Update(registration);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RegistrationExists(registration.Id))
+                    var json = JsonConvert.SerializeObject(registration);
+                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                    var response = await httpClient.PutAsync(Const.APIEndPoint + $"Registrations/{id}", content);
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        return RedirectToAction(nameof(Index));
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
             ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
             return View(registration);
@@ -134,16 +184,22 @@ namespace KoiMuseum.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var registration = await _context.Registrations
-                .Include(r => r.Contest)
-                .Include(r => r.RegisterDetail)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (registration == null)
+            using (var httpClient = new HttpClient())
             {
-                return NotFound();
+                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
+                        return View(registration);
+                    }
+                }
             }
 
-            return View(registration);
+            return NotFound();
         }
 
         // POST: Registrations/Delete/5
@@ -151,13 +207,15 @@ namespace KoiMuseum.MVCWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var registration = await _context.Registrations.FindAsync(id);
-            if (registration != null)
+            using (var httpClient = new HttpClient())
             {
-                _context.Registrations.Remove(registration);
+                var response = await httpClient.DeleteAsync(Const.APIEndPoint + $"Registrations/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
