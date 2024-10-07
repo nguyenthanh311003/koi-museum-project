@@ -41,11 +41,6 @@ namespace KoiMuseum.Data.Repositories
                 query = query.Where(r => r.RegisterDetail.Rank.Name.Contains(searchRegistrationFilter.rankName));
             }
 
-            if (!string.IsNullOrEmpty(searchRegistrationFilter.colorPattern))
-            {
-                query = query.Where(r => r.RegisterDetail.ColorPattern.Contains(searchRegistrationFilter.colorPattern));
-            }
-
             if (searchRegistrationFilter.approvalDate.HasValue)
             {
                 query = query.Where(r => r.ApprovalDate == searchRegistrationFilter.approvalDate);

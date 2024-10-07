@@ -98,7 +98,6 @@ namespace KoiMuseum.Service
                         OwnerId = (int) item.OwnerId,
                         Size = (int) item.Size,
                         Age = (int) item.Age,
-                        ColorPattern = item.ColorPattern
                     };
                     registerDetailResponses.Add(getRegisterDetailByRankIdResponse);
                 }

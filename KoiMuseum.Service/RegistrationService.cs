@@ -242,7 +242,6 @@ namespace KoiMuseum.Service
                     ImageUrl = null,
                     Size = r.RegisterDetail?.Size,
                     Age = r.RegisterDetail?.Age,
-                    ColorPattern = r.RegisterDetail?.ColorPattern,
                     OwnerName = r.RegisterDetail?.Owner?.Name,
                     Rank = r.RegisterDetail?.Rank?.Name,
                     ContestName = r.Contest?.Name,
