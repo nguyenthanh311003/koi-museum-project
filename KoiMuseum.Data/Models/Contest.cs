@@ -1,4 +1,7 @@
-﻿namespace KoiMuseum.Data.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace KoiMuseum.Data.Models;
 
 public partial class Contest
 {

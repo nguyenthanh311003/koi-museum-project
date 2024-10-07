@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KoiMuseum.Common
+﻿namespace KoiMuseum.Common
 {
     public class Const
     {
         #region Error Codes
 
         public static int ERROR_EXCEPTION = -4;
-
         public static string APIEndPoint = "https://localhost:7028/api/";
+
+        #endregion
+        #region Status Codes
+
+        public static string APPROVE_STATUS = "APPROVE";
+        public static string CANCEL_STATUS = "CANCEL";
+        public static string REJECT_STATUS = "REJECT";
+
 
         #endregion
 
@@ -26,7 +27,6 @@ namespace KoiMuseum.Common
         public static string SUCCESS_UPDATE_MSG = "Update data success";
         public static int SUCCESS_DELETE_CODE = 1;
         public static string SUCCESS_DELETE_MSG = "Delete data success";
-
 
         #endregion
 
@@ -47,6 +47,8 @@ namespace KoiMuseum.Common
 
         public static int WARNING_NO_DATA_CODE = 4;
         public static string WARNING_NO_DATA_MSG = "No data";
+        public static int WARNING_STATUS_CHANGE_CODE = 5;  // New code added
+        public static string WARNING_STATUS_CHANGE_MSG = "Status change warning";  // Optional message
 
         #endregion
     }

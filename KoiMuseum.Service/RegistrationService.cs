@@ -12,7 +12,19 @@ namespace KoiMuseum.Service
         Task<IServiceResult> GetAllV2();
         Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter);
         Task<IServiceResult> GetById(int id);
+
+        /// <summary>
+        /// Retrieves a registration by its ID, including related entities such as `RegisterDetail.Owner` and `Contest`.
+        /// Maps the retrieved registration data to a `RegistrationResponse` DTO to return relevant information.
+        /// </summary>
+        /// <param name="id">The ID of the registration to fetch.</param>
+        /// <returns>
+        /// Returns an `IServiceResult` containing the `RegistrationResponse` DTO if found, or an appropriate warning message if no data is found.
+        /// </returns>
+        Task<IServiceResult> GetByIdV2(int id);
+
         Task<IServiceResult> Save(Registration registration);
+        Task<IServiceResult> ChangeStatus(int id, string status);
         Task<IServiceResult> DeleteById(int id);
     }
 
@@ -24,6 +36,51 @@ namespace KoiMuseum.Service
         {
             _unitOfWork ??= new UnitOfWork();
         }
+
+        /// <summary>
+        /// Changes the status of a registration by its ID to the specified status.
+        /// </summary>
+        /// <param name="id">The ID of the registration whose status needs to be changed.</param>
+        /// <param name="status">The new status to apply to the registration.</param>
+        /// <returns>
+        /// Returns an `IServiceResult` indicating the success or failure of the status change.
+        /// </returns>
+        public async Task<IServiceResult> ChangeStatus(int id, string status)
+        {
+            // Fetch the registration by ID
+            var registration = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
+
+            // Check if the registration exists
+            if (registration == null)
+            {
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+            }
+
+            // Validate the new status
+            var validStatuses = new List<string> { "CANCEL", "APPROVE", "REJECT" };
+            if (!validStatuses.Contains(status))
+            {
+                return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, "Invalid status.");
+            }
+
+            // Check if the registration is already in the desired status
+            if (registration.Status == status)
+            {
+                return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Registration is already in {status} status.");
+            }
+
+
+            // Update the registration's status to the new status
+            registration.Status = status;
+            registration.UpdatedDate = DateTime.Now;
+
+            // Save the updated registration to the database
+            await _unitOfWork.RegistrationRepository.UpdateAsync(registration);
+
+            // Return success response with the updated registration details
+            return new ServiceResult(Const.SUCCESS_UPDATE_CODE, $"Status changed to {status} successfully.", registration);
+        }
+
 
         public async Task<IServiceResult> DeleteById(int id)
         {
@@ -73,7 +130,6 @@ namespace KoiMuseum.Service
                 ImageUrl = null,  // Assuming no image URL provided
                 Size = r.RegisterDetail?.Size,
                 Age = r.RegisterDetail?.Age,
-                ColorPattern = r.RegisterDetail?.ColorPattern,
                 OwnerName = r.RegisterDetail?.Owner?.Name,  // Check if Owner and Name exist
                 Rank = r.RegisterDetail?.Rank?.Name,  // Check if Rank exists
                 ContestName = r.Contest?.Name,  // Check if Contest exists
@@ -92,38 +148,6 @@ namespace KoiMuseum.Service
             return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
         }
 
-        public async Task<List<RegistrationResponse>> SearchRegistrations(string ownerName, string contestName, string status, string rank, string colorPattern, DateOnly? approvalDate, string confirmationCode)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var queryParams = new List<string>();
-
-                if (!string.IsNullOrEmpty(ownerName)) queryParams.Add($"ownerName={ownerName}");
-                if (!string.IsNullOrEmpty(contestName)) queryParams.Add($"contestName={contestName}");
-                if (!string.IsNullOrEmpty(status)) queryParams.Add($"status={status}");
-                if (!string.IsNullOrEmpty(rank)) queryParams.Add($"rank={rank}");
-                if (!string.IsNullOrEmpty(colorPattern)) queryParams.Add($"colorPattern={colorPattern}");
-                if (approvalDate.HasValue) queryParams.Add($"approvalDate={approvalDate.Value}");
-                if (!string.IsNullOrEmpty(confirmationCode)) queryParams.Add($"confirmationCode={confirmationCode}");
-
-                var queryString = string.Join("&", queryParams);
-                var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations/search" + (queryParams.Count > 0 ? "?" + queryString : ""));
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    //var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                    //if (result != null && result.Data != null)
-                    //{
-                    //    return JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
-                    //}
-                }
-            }
-
-            return new List<RegistrationResponse>();
-        }
-
-
         public async Task<IServiceResult> GetById(int id)
         {
             var registrationById = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
@@ -131,6 +155,48 @@ namespace KoiMuseum.Service
                 ? new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG)
                 : new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registrationById);
         }
+        /// <summary>
+        /// Retrieves a registration by its ID, including related entities such as `RegisterDetail.Owner` and `Contest`.
+        /// Maps the retrieved registration data to a `RegistrationResponse` DTO to return relevant information.
+        /// </summary>
+        /// <param name="id">The ID of the registration to fetch.</param>
+        /// <returns>
+        /// Returns an `IServiceResult` containing the `RegistrationResponse` DTO if found, or an appropriate warning message if no data is found.
+        /// </returns>
+        public async Task<IServiceResult> GetByIdV2(int id)
+        {
+            // Fetch registration by ID with related entities
+            var registrationById = await _unitOfWork.RegistrationRepository.GetByIdAsync(id, "RegisterDetail.Owner", "Contest");
+
+            if (registrationById == null)
+            {
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+            }
+
+            // Map registration to RegistrationResponse
+            var response = new RegistrationResponse
+            {
+                Id = registrationById.Id,
+                ImageUrl = null,  // Assuming no image URL provided
+                Size = registrationById.RegisterDetail?.Size,
+                Age = registrationById.RegisterDetail?.Age,
+                OwnerName = registrationById.RegisterDetail?.Owner?.Name,  // Check if Owner exists
+                Rank = registrationById.RegisterDetail?.Rank?.Name,  // Check if Rank exists
+                ContestName = registrationById.Contest?.Name,  // Check if Contest exists
+                RegistrationDate = registrationById.CreatedDate,  // Corrected to use RegistrationDate
+                ApprovalDate = registrationById.ApprovalDate,
+                RejectedReason = registrationById.RejectedReason,
+                ConfirmationCode = registrationById.ConfirmationCode,
+                IntroductionOfOwner = registrationById.IntroductionOfOwner,
+                IntroductionOfKoi = registrationById.IntroductionOfKoi,
+                Status = registrationById.Status,
+                AdminReviewedBy = registrationById.AdminReviewedBy,
+                UpdatedDate = registrationById.RegisterDetail?.UpdatedDate,
+                UpdatedBy = registrationById.RegisterDetail?.UpdatedBy
+            };
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+        }
+
 
         public async Task<IServiceResult> Save(Registration registration)
         {

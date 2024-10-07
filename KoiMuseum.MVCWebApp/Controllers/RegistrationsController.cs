@@ -251,5 +251,38 @@ namespace KoiMuseum.MVCWebApp.Controllers
         {
             return _context.Registrations.Any(e => e.Id == id);
         }
+        // POST: Registrations/ChangeStatus/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(int id, string status)
+        {
+            if (string.IsNullOrEmpty(status))
+            {
+                return BadRequest("Status cannot be empty.");
+            }
+
+            // Prepare the HttpClient
+            using (var httpClient = new HttpClient())
+            {
+                // Create the request body as a JSON object
+                var json = JsonConvert.SerializeObject(new { id = id, status = status });
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                // Send the POST request to change status
+                var response = await httpClient.PostAsync(Const.APIEndPoint + $"Registrations/ChangeStatus/", content);
+
+                // Check if the response is successful
+                if (response.IsSuccessStatusCode)
+                {
+                    return Ok("Status changed successfully.");
+                }
+
+                // Return the error message if the API call failed
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return BadRequest($"Error changing status: {errorContent}");
+            }
+        }
+
+
     }
 }

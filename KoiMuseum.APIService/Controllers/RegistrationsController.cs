@@ -34,7 +34,7 @@ namespace KoiMuseum.APIService.Controllers
         [HttpGet("{id}")]
         public async Task<IServiceResult> GetRegistration(int id)
         {
-            var registration = await _registrationService.GetById(id);
+            var registration = await _registrationService.GetByIdV2(id);
             return registration;
         }
 
@@ -58,5 +58,13 @@ namespace KoiMuseum.APIService.Controllers
         {
             return await _registrationService.DeleteById(id);
         }
+
+        // PUT: api/Registrations/ChangeStatus/5
+        [HttpPut("ChangeStatus/{id}")]
+        public async Task<IServiceResult> ChangeStatus(int id, string status)
+        {
+            return await _registrationService.ChangeStatus(id, status);
+        }
+
     }
 }
