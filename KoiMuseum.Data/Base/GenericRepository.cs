@@ -1,10 +1,5 @@
 ﻿using KoiMuseum.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KoiMuseum.Data.Base
 {
@@ -61,6 +56,19 @@ namespace KoiMuseum.Data.Base
         {
             return await _context.Set<T>().ToListAsync();
         }
+        public async Task<List<T>> GetAllAsync(params string[] includeProperties)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            // Eagerly load the related entities specified in includeProperties
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.ToListAsync();
+        }
+
         public void Create(T entity)
         {
             _context.Add(entity);
