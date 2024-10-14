@@ -30,6 +30,12 @@ namespace KoiMuseum.APIService.Controllers
             return await _registrationService.SearchSortCombineDataRegistrationAndRegisterDetail(searchRegistrationFilter);
         }
 
+        [HttpGet("counts")]
+        public async Task<IServiceResult> CountContestantsParticipating([FromQuery] string rankName)
+        {
+            return await _registrationService.CountContestantsParticipating(rankName);
+        }
+
         // GET: api/Registrations/5
         [HttpGet("{id}")]
         public async Task<IServiceResult> GetRegistration(int id)
