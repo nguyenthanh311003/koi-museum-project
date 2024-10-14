@@ -1,65 +1,249 @@
-﻿@model IEnumerable<KoiMuseum.Data.Dtos.Responses.Registration.RegistrationResponse>
+﻿@model KoiMuseum.Data.PagingModel.PagedResult<KoiMuseum.Data.Dtos.Responses.Registration.RegistrationResponse>
 
 @{
     ViewData["Title"] = "Registration List Of Rank";
 }
 
-<h1>Registrations for @ViewBag.RankName in @ViewBag.ContestName</h1>
-
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-md-4">
-            <div class="card">
-                <img class="card-img-top" src="@item.ImageUrl" alt="@item.ImageUrl">
-                <div class="card-body">
-                    <h5 class="card-title">@item.ContestName</h5>
-                    <p class="card-text">Species: @item.ContestName</p>
-                    <p class="card-text">Owner: @item.OwnerName</p>
+@if (Model?.Items != null && Model.Items.Any())
+{
+    <h1>There are @ViewBag.RegistrationCount contestants participating</h1>
+    <div class="search-container">
+        <form method="GET" action="/Registrations/Search">
+            <input type="text" name="searchQuery" class="search-input" placeholder="Search by fish name or owner name...">
+            <button type="submit" class="search-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </form>
+    </div>
+    <div class="row">
+        @foreach (var item in Model.Items)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="image-container">
+                        <img class="card-img-top" src="https://aquariumcare.vn/upload/sanpham/ca-koi-bieu-tuong-cua-su-may-man-va-thinh-vuong-755.jpg" alt="@item.ImageUrl">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">Species: @item.Type</p>
+                        <p class="card-text">Owner: @item.OwnerName</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+
+    <div class="pagination-container">
+        <ul class="pagination">
+            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                <a href="?pageNumber=@(Model.PageNumber - 1)&name=@ViewBag.RankName&contestName=@ViewBag.ContestName" class="page-link">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                    <a href="?pageNumber=@i&name=@ViewBag.RankName&contestName=@ViewBag.ContestName" class="page-link">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                <a href="?pageNumber=@(Model.PageNumber + 1)&name=@ViewBag.RankName&contestName=@ViewBag.ContestName" class="page-link">Next</a>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <p>No registrations found for this rank.</p>
+}
 
 <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        padding: 40px;
+        margin: 0;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 50px;
+        font-size: 3em;
+        font-weight: 700;
+        color: #1a1a1a;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
     .row {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;
+        justify-content: center;
+        gap: 30px;
     }
 
     .col-md-4 {
-        flex: 0 0 30%;
-        max-width: 30%;
-        margin-bottom: 30px;
+        flex: 0 0 25%;
+        max-width: 25%;
     }
 
     .card {
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
         text-align: center;
+        border: 2px solid transparent;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        border: 2px solid #ffa500;
+    }
+
+    .image-container {
+        overflow: hidden;
+        border-bottom: 2px solid #f0f0f0;
     }
 
     .card-img-top {
         width: 100%;
-        height: auto;
-        border-radius: 5px;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .card:hover .card-img-top {
+        transform: scale(1.1);
     }
 
     .card-body {
-        padding: 10px 0;
+        padding: 20px;
     }
 
     .card-title {
-        font-size: 1.25em;
-        margin-bottom: 10px;
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #333333;
+        margin-bottom: 15px;
+        text-transform: capitalize;
     }
 
     .card-text {
-        font-size: 1em;
-        color: #555;
+        font-size: 1.2em;
+        color: #555555;
+        margin-bottom: 10px;
     }
+
+    .card-text:last-child {
+        margin-bottom: 0;
+    }
+
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 50px;
+    }
+
+        .search-container form {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+    .search-input {
+        padding: 15px 20px;
+        border: none;
+        outline: none;
+        font-size: 1.2em;
+        border-radius: 50px 0 0 50px;
+        width: 400px;
+        transition: all 0.3s ease;
+    }
+
+        .search-input::placeholder {
+            color: #aaa;
+            font-style: italic;
+        }
+
+    .search-btn {
+        background-color: #ffa500;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 0 50px 50px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .search-btn svg {
+            stroke: #fff;
+        }
+
+        .search-btn:hover {
+            background-color: #ff7f00;
+        }
+
+    .search-container:hover .search-input {
+        width: 450px;
+    }
+
+    .search-container:hover .search-btn {
+        background-color: #ff7f00;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+    }
+
+    .pagination {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 10px;
+    }
+
+    .page-item {
+        font-size: 1.2em;
+    }
+
+    .page-link {
+        display: block;
+        padding: 10px 20px;
+        text-decoration: none;
+        color: #555;
+        background-color: #fff;
+        border-radius: 50px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .page-link:hover {
+            background-color: #ffa500;
+            color: #fff;
+        }
+
+    .page-item.active .page-link {
+        background-color: #ffa500;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .page-item.disabled .page-link {
+        background-color: #e0e0e0;
+        color: #aaa;
+        cursor: not-allowed;
+    }
+    
 </style>
