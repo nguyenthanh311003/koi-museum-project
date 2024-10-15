@@ -1,4 +1,5 @@
-﻿using KoiMuseum.Data.Models;
+﻿using KoiMuseum.Data.Filters;
+using KoiMuseum.Data.Models;
 using KoiMuseum.Service;
 using KoiMuseum.Service.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,18 @@ namespace KoiMuseum.APIService.Controllers
         public async Task<IServiceResult> GetRegistrations()
         {
             return await _registrationService.GetAllV2();
+        }
+
+        [HttpGet("Registrationss")]
+        public async Task<IServiceResult> SearchRegistrationsAsync([FromQuery] SearchRegistrationFilter searchRegistrationFilter)
+        {
+            return await _registrationService.SearchSortCombineDataRegistrationAndRegisterDetail(searchRegistrationFilter);
+        }
+
+        [HttpGet("counts")]
+        public async Task<IServiceResult> CountContestantsParticipating([FromQuery] string rankName)
+        {
+            return await _registrationService.CountContestantsParticipating(rankName);
         }
 
         // GET: api/Registrations/5

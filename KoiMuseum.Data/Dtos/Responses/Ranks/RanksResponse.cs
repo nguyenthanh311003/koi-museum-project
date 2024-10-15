@@ -12,6 +12,8 @@ namespace KoiMuseum.Data.Dtos.Responses.Ranks
 
         public string Name { get; set; } = null!;
 
+        public string ContestName {  get; set; } = null!;
+
         public string Criteria { get; set; } = null!;
 
         public decimal Reward { get; set; }
@@ -25,6 +27,10 @@ namespace KoiMuseum.Data.Dtos.Responses.Ranks
         public int? MinAge { get; set; }
 
         public int? MaxAge { get; set; }
+
+        public int Participants { get; set; }
+
+        public string Status { get; set; }
 
         public string? VarietyRestriction { get; set; }
     }
