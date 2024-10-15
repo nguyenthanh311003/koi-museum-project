@@ -15,6 +15,7 @@ namespace KoiMuseum.Service
     {
         Task<IServiceResult> GetAll();
         Task<IServiceResult> GetById(int id);
+        Task<IServiceResult> ClassificationRank(int registerDetailId);
     }
 
     public class RankService : IRankService
@@ -24,6 +25,92 @@ namespace KoiMuseum.Service
         public RankService()
         {
             _unitOfWork ??= new UnitOfWork();
+        }
+
+        public async Task<IServiceResult> ClassificationRank(int registerDetailId)
+        {
+            try
+            {
+                var registerDetailById = await _unitOfWork.RegisterDetailRepository.GetByIdAsync(registerDetailId);
+
+                if (registerDetailById == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+                }
+
+                // Phương thức này sẽ trả về Id của Rank dựa trên tên Rank
+                async Task<int> GetRankIdByNameAsync(string rankName)
+                {
+                    var rank = await _unitOfWork.RankRepository.GetRankByNameAsync(rankName);
+                    return rank?.Id ?? -1;
+                }
+
+                // Ưu tiên phân loại theo kích cỡ trước
+                if (registerDetailById.Size >= 10 && registerDetailById.Size <= 25)
+                {
+                    registerDetailById.Rank.Id = await GetRankIdByNameAsync("Junior Rank");
+                }
+                else if (registerDetailById.Size >= 26 && registerDetailById.Size <= 50)
+                {
+                    registerDetailById.Rank.Id = await GetRankIdByNameAsync("Senior Rank");
+                }
+                else if (registerDetailById.Size >= 51)
+                {
+                    registerDetailById.Rank.Id = await GetRankIdByNameAsync("Master Rank");
+                }
+                else
+                {
+                    // Nếu kích cỡ không đủ để phân loại, tiếp tục phân loại theo cân nặng
+                    if (double.TryParse(registerDetailById.Weight, out double weight))
+                    {
+                        if (weight >= 100 && weight <= 500)
+                        {
+                            registerDetailById.Rank.Id = await GetRankIdByNameAsync("Junior Rank");
+                        }
+                        else if (weight > 500 && weight <= 2000)
+                        {
+                            registerDetailById.Rank.Id = await GetRankIdByNameAsync("Senior Rank");
+                        }
+                        else if (weight > 2000)
+                        {
+                            registerDetailById.Rank.Id = await GetRankIdByNameAsync("Master Rank");
+                        }
+                    }
+
+                    // Nếu vẫn không đủ để phân loại, tiếp tục phân loại theo tuổi
+                    if (registerDetailById.Rank.Id == 0)
+                    {
+                        if (registerDetailById.Age < 1)
+                        {
+                            registerDetailById.Rank.Id = await GetRankIdByNameAsync("Junior Rank");
+                        }
+                        else if (registerDetailById.Age >= 1 && registerDetailById.Age <= 3)
+                        {
+                            registerDetailById.Rank.Id = await GetRankIdByNameAsync("Senior Rank");
+                        }
+                        else if (registerDetailById.Age > 3)
+                        {
+                            registerDetailById.Rank.Id = await GetRankIdByNameAsync("Master Rank");
+                        }
+                    }
+                }
+
+                // Cập nhật thông tin đăng ký chi tiết
+                int result = await _unitOfWork.RegisterDetailRepository.UpdateAsync(registerDetailById);
+
+                if (result > 0)
+                {
+                    return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, registerDetailById);
+                }
+                else
+                {
+                    return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, registerDetailById);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
         }
 
         public async Task<IServiceResult> GetAll()
