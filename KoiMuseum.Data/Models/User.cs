@@ -35,5 +35,7 @@ public partial class User
 
     public virtual ICollection<Judge> Judges { get; set; } = new List<Judge>();
 
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
     public virtual ICollection<RegisterDetail> RegisterDetails { get; set; } = new List<RegisterDetail>();
 }

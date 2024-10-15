@@ -25,6 +25,8 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
 
     public virtual DbSet<JudgingResult> JudgingResults { get; set; }
 
+    public virtual DbSet<Payment> Payments { get; set; }
+
     public virtual DbSet<Rank> Ranks { get; set; }
 
     public virtual DbSet<RegisterDetail> RegisterDetails { get; set; }
@@ -200,6 +202,54 @@ public partial class Fa24Se172594Prn231G1KfsContext : DbContext
             entity.HasOne(d => d.Koi).WithMany(p => p.JudgingResults)
                 .HasForeignKey(d => d.KoiId)
                 .HasConstraintName("FK_JudgingResult_RegisterDetail");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Payment__3213E83F6DFE62A6");
+
+            entity.ToTable("Payment");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Amount)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("amount");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("createdAt");
+            entity.Property(e => e.Currency)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("currency");
+            entity.Property(e => e.Description)
+                .HasColumnType("text")
+                .HasColumnName("description");
+            entity.Property(e => e.PaymentMethod)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("paymentMethod");
+            entity.Property(e => e.PaymentStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("paymentStatus");
+            entity.Property(e => e.RefundAmount)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("refundAmount");
+            entity.Property(e => e.RefundStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("refundStatus");
+            entity.Property(e => e.TransactionId)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("transactionId");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payment__userId__634EBE90");
         });
 
         modelBuilder.Entity<Rank>(entity =>

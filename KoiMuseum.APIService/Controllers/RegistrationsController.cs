@@ -54,10 +54,10 @@ namespace KoiMuseum.APIService.Controllers
 
         // PUT: api/Registrations/ChangeStatus/5
         [HttpPut("ChangeStatus/{id}")]
-        public async Task<IServiceResult> ChangeStatus(int id, string status)
+        public async Task<IServiceResult> ChangeStatus(int id, [FromQuery] string status)
         {
+            // Call the service to change the status
             return await _registrationService.ChangeStatus(id, status);
         }
-
     }
 }

@@ -1,9 +1,9 @@
-﻿using KoiMuseum.Data.Base;// Replace with your actual entity namespace
+﻿using KoiMuseum.Data.Base; // Replace with your actual base repository namespace
 using KoiMuseum.Data.Models;
 
 namespace KoiMuseum.Data.Repositories
 {
-    public class RegistrationRepository : GenericRepository<Registration> // Consider using an interface
+    public class RegistrationRepository : GenericRepository<Registration>
     {
         public RegistrationRepository() { }
 

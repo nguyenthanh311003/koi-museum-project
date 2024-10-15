@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Details";
 }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <h1>Details</h1>
 
@@ -97,7 +98,32 @@
     </dl>
 </div>
 
+<!-- Button to Approve or Reject the Registration -->
+<!-- Buttons for Approve and Reject -->
 <div>
-    <a asp-action="Approve" asp-route-id="@Model?.Id">Approve</a>
+    <!-- Properly pass id and status in function -->
+    <a href="javascript:void(0)" onclick="changeStatus(@Model.Id, 'APPROVE')">Approve</a>
+    <a href="javascript:void(0)" onclick="changeStatus(@Model.Id, 'CHECKIN')">CheckIn</a>
+    <a href="javascript:void(0)" onclick="changeStatus(@Model.Id, 'REJECT')">Reject</a>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+    function changeStatus(id, status) {
+        if (confirm(`Are you sure you want to ${status.toLowerCase()} this registration?`)) {
+            $.ajax({
+                url: '@Url.Action("ChangeStatus", "Registrations")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ id: id, status: status }), // Properly pass id and status
+                success: function (response) {
+                    alert(response); // Show success message
+                    window.location.reload(); // Reload the page to see changes
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText); // Show error message
+                }
+            });
+        }
+    }
+</script>

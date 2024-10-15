@@ -11,6 +11,7 @@
         #region Status Codes
 
         public static string APPROVE_STATUS = "APPROVE";
+        public static string CHECKIN_STATUS = "CHECKIN";
         public static string CANCEL_STATUS = "CANCEL";
         public static string REJECT_STATUS = "REJECT";
 

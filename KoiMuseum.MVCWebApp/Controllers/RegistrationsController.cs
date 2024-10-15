@@ -1,10 +1,5 @@
-﻿using KoiMuseum.Common;
-using KoiMuseum.Data.Dtos.Responses.Registration;
-using KoiMuseum.Data.Models;
-using KoiMuseum.Service.Base;
+﻿using KoiMuseum.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 
 namespace KoiMuseum.MVCWebApp.Controllers
 {
@@ -20,240 +15,248 @@ namespace KoiMuseum.MVCWebApp.Controllers
         // GET: Registrations
         public async Task<IActionResult> Index()
         {
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations");
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                    if (result != null && result.Data != null)
-                    {
-                        var data = JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
-                        return View(data);
-                    }
-                }
-            }
-
-            return View(new List<RegistrationResponse>());
-        }
-        public IActionResult Search(string searchString)
-        {
-            // Store the current search string for use in the view
-            ViewData["CurrentFilter"] = searchString;
-
-            // Get all registrations
-            var registrations = from r in _context.Registrations
-                                select r;
-
-            // Filter by search string
-            //if (!String.IsNullOrEmpty(searchString))
+            //using (var httpClient = new HttpClient())
             //{
-            //    registrations = registrations.Where(r =>
-            //        r..Contains(searchString) ||
-            //        r.Rank.Contains(searchString) ||
-            //        r.ContestName.Contains(searchString));
+            //    var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations");
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var content = await response.Content.ReadAsStringAsync();
+            //        var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+            //        if (result != null && result.Data != null)
+            //        {
+            //            var data = JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
+            //            return View(data);
+            //        }
+            //    }
             //}
 
-            // Return filtered results
-            return View(registrations.ToList());
-        }
-
-        // GET: Registrations/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                    if (result != null && result.Data != null)
-                    {
-                        var registration = JsonConvert.DeserializeObject<RegistrationResponse>(result.Data.ToString());
-                        return View(registration);
-                    }
-                }
-            }
-
-            return NotFound();
-        }
-
-        // GET: Registrations/Create
-        public async Task<IActionResult> Create()
-        {
-            ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name");
-            ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id");
+            //return View(new List<RegistrationResponse>());
             return View();
         }
+        //public IActionResult Search(string searchString)
+        //{
+        //    // Store the current search string for use in the view
+        //    ViewData["CurrentFilter"] = searchString;
 
-        // POST: Registrations/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    var json = JsonConvert.SerializeObject(registration);
-                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-                    var response = await httpClient.PostAsync(Const.APIEndPoint + "Registrations", content);
+        //    // Get all registrations
+        //    var registrations = from r in _context.Registrations
+        //                        select r;
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
+        //    // Filter by search string
+        //    //if (!String.IsNullOrEmpty(searchString))
+        //    //{
+        //    //    registrations = registrations.Where(r =>
+        //    //        r..Contains(searchString) ||
+        //    //        r.Rank.Contains(searchString) ||
+        //    //        r.ContestName.Contains(searchString));
+        //    //}
 
-            ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
-            ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
-            return View(registration);
-        }
+        //    // Return filtered results
+        //    return View(registrations.ToList());
+        //}
 
-        // GET: Registrations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: Registrations/Details/5
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                    if (result != null && result.Data != null)
-                    {
-                        var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
-                        ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
-                        ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
-                        return View(registration);
-                    }
-                }
-            }
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var content = await response.Content.ReadAsStringAsync();
+        //            var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+        //            if (result != null && result.Data != null)
+        //            {
+        //                var registration = JsonConvert.DeserializeObject<RegistrationResponse>(result.Data.ToString());
+        //                return View(registration);
+        //            }
+        //        }
+        //    }
 
-            return NotFound();
-        }
+        //    return NotFound();
+        //}
 
-        // POST: Registrations/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
-        {
-            if (id != registration.Id)
-            {
-                return NotFound();
-            }
+        //// GET: Registrations/Create
+        //public async Task<IActionResult> Create()
+        //{
+        //    ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name");
+        //    ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id");
+        //    return View();
+        //}
 
-            if (ModelState.IsValid)
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    var json = JsonConvert.SerializeObject(registration);
-                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-                    var response = await httpClient.PutAsync(Const.APIEndPoint + $"Registrations/{id}", content);
+        //// POST: Registrations/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            var json = JsonConvert.SerializeObject(registration);
+        //            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        //            var response = await httpClient.PostAsync(Const.APIEndPoint + "Registrations", content);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                }
-            }
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                return RedirectToAction(nameof(Index));
+        //            }
+        //        }
+        //    }
 
-            ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
-            ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
-            return View(registration);
-        }
+        //    ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
+        //    ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
+        //    return View(registration);
+        //}
 
-        // GET: Registrations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: Registrations/Edit/5
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                    if (result != null && result.Data != null)
-                    {
-                        var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
-                        return View(registration);
-                    }
-                }
-            }
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var content = await response.Content.ReadAsStringAsync();
+        //            var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+        //            if (result != null && result.Data != null)
+        //            {
+        //                var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
+        //                ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
+        //                ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
+        //                return View(registration);
+        //            }
+        //        }
+        //    }
 
-            return NotFound();
-        }
+        //    return NotFound();
+        //}
 
-        // POST: Registrations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.DeleteAsync(Const.APIEndPoint + $"Registrations/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-            }
+        //// POST: Registrations/Edit/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
+        //{
+        //    if (id != registration.Id)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return RedirectToAction(nameof(Index));
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            var json = JsonConvert.SerializeObject(registration);
+        //            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        //            var response = await httpClient.PutAsync(Const.APIEndPoint + $"Registrations/{id}", content);
 
-        private bool RegistrationExists(int id)
-        {
-            return _context.Registrations.Any(e => e.Id == id);
-        }
-        // POST: Registrations/ChangeStatus/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeStatus(int id, string status)
-        {
-            if (string.IsNullOrEmpty(status))
-            {
-                return BadRequest("Status cannot be empty.");
-            }
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                return RedirectToAction(nameof(Index));
+        //            }
+        //        }
+        //    }
 
-            // Prepare the HttpClient
-            using (var httpClient = new HttpClient())
-            {
-                // Create the request body as a JSON object
-                var json = JsonConvert.SerializeObject(new { id = id, status = status });
-                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        //    ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
+        //    ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
+        //    return View(registration);
+        //}
 
-                // Send the POST request to change status
-                var response = await httpClient.PostAsync(Const.APIEndPoint + $"Registrations/ChangeStatus/", content);
+        //// GET: Registrations/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-                // Check if the response is successful
-                if (response.IsSuccessStatusCode)
-                {
-                    return Ok("Status changed successfully.");
-                }
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var content = await response.Content.ReadAsStringAsync();
+        //            var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+        //            if (result != null && result.Data != null)
+        //            {
+        //                var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
+        //                return View(registration);
+        //            }
+        //        }
+        //    }
 
-                // Return the error message if the API call failed
-                var errorContent = await response.Content.ReadAsStringAsync();
-                return BadRequest($"Error changing status: {errorContent}");
-            }
-        }
+        //    return NotFound();
+        //}
+
+        //// POST: Registrations/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var response = await httpClient.DeleteAsync(Const.APIEndPoint + $"Registrations/{id}");
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            return RedirectToAction(nameof(Index));
+        //        }
+        //    }
+
+        //    return RedirectToAction(nameof(Index));
+        //}
+
+        //private bool RegistrationExists(int id)
+        //{
+        //    return _context.Registrations.Any(e => e.Id == id);
+        //}
+        //// POST: Registrations/ChangeStatus/5
+        //[HttpPost]
+        //public async Task<IActionResult> ChangeStatus([FromBody] ChangeStatusRequest request)
+        //{
+        //    if (request == null || string.IsNullOrEmpty(request.Status))
+        //    {
+        //        return BadRequest("Status cannot be empty.");
+        //    }
+
+        //    // Prepare the HttpClient
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        // Create the request body as a JSON object
+        //        var json = JsonConvert.SerializeObject(new { id = request.Id, status = request.Status });
+        //        var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+        //        // Send the POST request to change status
+        //        var apiUrl = $"{Const.APIEndPoint}Registrations/ChangeStatus/{request.Id}?status={request.Status}";
+        //        var response = await httpClient.PutAsync(apiUrl, content);
+
+        //        // Check if the response is successful
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            return Ok("Status changed successfully.");
+        //        }
+
+        //        // Return the error message if the API call failed
+        //        var errorContent = await response.Content.ReadAsStringAsync();
+        //        return BadRequest($"Error changing status: {errorContent}");
+        //    }
+        //}
+
+        //// DTO for the incoming request
+        //public class ChangeStatusRequest
+        //{
+        //    public int Id { get; set; }
+        //    public string Status { get; set; }
+        //}
 
 
     }
