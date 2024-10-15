@@ -45,6 +45,13 @@ namespace KoiMuseum.APIService.Controllers
             return registration;
         }
 
+        [HttpGet("WithDetails/{id}")]
+        public async Task<IServiceResult> GetByIdWithCombineRegisterDetailResponse(int id)
+        {
+            var registration = await _registrationService.GetByIdWithCombineRegisterDetailResponse(id);
+            return registration;
+        }
+
         // PUT: api/Registrations
         [HttpPut]
         public async Task<IServiceResult> PutRegistration(Registration registration)

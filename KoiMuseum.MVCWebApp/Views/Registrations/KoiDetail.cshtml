@@ -1,0 +1,213 @@
+﻿@{
+    ViewData["Title"] = "Koi Fish Details";
+    int score = 85;
+    string scoreColor = score < 50 ? "#e74c3c" : (score < 75 ? "#f1c40f" : "#2ecc71");
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+<div class="koi-details">
+    <div class="koi-header">
+        <h1></h1>
+        <p></p>
+    </div>
+
+    <div class="koi-info">
+        <div class="koi-image">
+            <img src="https://aquariumcare.vn/upload/sanpham/ca-koi-bieu-tuong-cua-su-may-man-va-thinh-vuong-755.jpg" alt="Neymarw">
+        </div>
+
+        <div class="koi-details-content">
+            <h2>Owner Information</h2>
+            <p><strong>Owner Name:</strong></p>
+            <p><strong>Introduction of Owner:</strong> </p>
+
+            <h2>Registration Information</h2>
+            <p><strong>Registration Date:</strong> October 03, 2024</p>
+            <p><strong>Approval Date:</strong> October 03, 2024</p>
+            <p><strong>Confirmation Code:</strong> </p>
+
+            <h2>Koi Details</h2>
+            <p><strong>Introduction of Koi:</strong> </p>
+            <p><strong>Reviewed by:</strong> </p>
+            <p><strong>Size:</strong> </p>
+            <p><strong>Weight:</strong> </p>
+            <p><strong>Age:</strong> </p>
+            <p><strong>Gender:</strong> </p>
+
+            <h2>Koi Score</h2>
+            <p class="koi-score" style="color: @scoreColor;"><strong>Score:</strong> @score / 100</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f7f6;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .koi-details {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: 0 auto;
+        text-align: center;
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .koi-details:hover {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+    .koi-header h1 {
+        font-size: 3em;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .koi-header p {
+        font-size: 1.5em;
+        color: #95a5a6;
+        margin-bottom: 20px;
+    }
+
+    .koi-info {
+        display: flex;
+        gap: 40px;
+        justify-content: center;
+        margin-bottom: 50px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .koi-image img {
+        width: 350px;
+        height: auto;
+        border-radius: 20px;
+        object-fit: cover;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+        .koi-image img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+    .koi-details-content {
+        max-width: 450px;
+        text-align: left;
+        line-height: 1.8;
+    }
+
+        .koi-details-content h2 {
+            font-size: 2em;
+            color: #34495e;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e67e22;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .koi-details-content p {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+    p strong {
+        color: #2c3e50;
+    }
+
+    .koi-score {
+        font-size: 1.8em;
+        font-weight: 700;
+    }
+
+    .koi-actions {
+        margin-top: 30px;
+    }
+
+        .koi-actions .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #e67e22;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+            .koi-actions .btn:hover {
+                background-color: #d35400;
+                transform: translateY(-3px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            .koi-actions .btn + .btn {
+                margin-left: 15px;
+            }
+</style>
+
+<script>
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    $(document).ready(function () {
+        var id = getParameterByName('id');
+        $.ajax({
+            url: `https://localhost:7028/api/Registrations/WithDetails/${id}`,
+            type: 'GET',
+            dataType: "json",
+            success: function (response) {
+                const data = response.data;
+                console.log(data);
+
+                $('.koi-header h1').text(data.name || 'N/A');
+                $('.koi-header p').text(data.type || 'N/A');
+
+                const imageUrl = data.imageUrl ? data.imageUrl : 'https://aquariumcare.vn/upload/sanpham/ca-koi-bieu-tuong-cua-su-may-man-va-thinh-vuong-755.jpg';
+                $('.koi-image img').attr('src', imageUrl);
+
+                $('.koi-details-content').find('p:contains("Owner Name:")').html(`<strong>Owner Name:</strong> ${data.ownerName || 'N/A'}`);
+                $('.koi-details-content').find('p:contains("Introduction of Owner:")').html(`<strong>Introduction of Owner:</strong> ${data.introductionOfOwner || 'N/A'}`);
+                $('.koi-details-content').find('p:contains("Size:")').html(`<strong>Size:</strong> ${data.size || 'N/A'} cm`);
+                $('.koi-details-content').find('p:contains("Weight:")').html(`<strong>Weight:</strong> ${data.weight || 'N/A'} kg`);
+                $('.koi-details-content').find('p:contains("Age:")').html(`<strong>Age:</strong> ${data.age || 'N/A'} years`);
+                $('.koi-details-content').find('p:contains("Gender:")').html(`<strong>Gender:</strong> ${data.gender || 'N/A'}`);
+                $('.koi-details-content').find('p:contains("Reviewed by:")').html(`<strong>Reviewed by:</strong> ${data.adminReviewedBy || 'N/A'}`);
+                $('.koi-details-content').find('p:contains("Introduction of Koi:")').html(`<strong>Introduction of Koi:</strong> ${data.introductionOfKoi || 'N/A'}`);
+                $('.koi-details-content').find('p:contains("Registration Date:")').html(`<strong>Registration Date:</strong> ${new Date(data.registrationDate).toLocaleDateString()}`);
+                $('.koi-details-content').find('p:contains("Approval Date:")').html(`<strong>Approval Date:</strong> ${new Date(data.approvalDate).toLocaleDateString()}`);
+                $('.koi-details-content').find('p:contains("Confirmation Code:")').html(`<strong>Confirmation Code:</strong> ${data.confirmationCode || 'N/A'}`);
+
+                const score = data.score || 85;
+                $('.koi-details-content').find('p:contains("Score:")').html(`<strong>Score:</strong> ${score} / 100`);
+
+                let scoreColor = score < 50 ? "#e74c3c" : (score < 75 ? "#f1c40f" : "#2ecc71");
+                $('.koi-score').css('color', scoreColor);
+            },
+            error: function (error) {
+                console.error("Có lỗi xảy ra khi lấy dữ liệu", error);
+            }
+        });
+    });
+</script>
+
+
+

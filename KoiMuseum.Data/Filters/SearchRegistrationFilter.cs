@@ -9,6 +9,7 @@ namespace KoiMuseum.Data.Filters
     public class SearchRegistrationFilter
     {
         public string? ownerName { get; set; }
+        public string? fishName { get; set; }
 
         public string? contestName { get; set; }
 
@@ -23,6 +24,6 @@ namespace KoiMuseum.Data.Filters
         public string? confirmationCode { get; set; }
 
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 6;
+        public int PageSize { get; set; } = 10;
     }
 }

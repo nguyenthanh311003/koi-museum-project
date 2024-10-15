@@ -26,7 +26,7 @@ namespace KoiMuseum.Data.Repositories
             // Áp dụng các bộ lọc nếu có
             if (!string.IsNullOrEmpty(filter.ownerName))
             {
-                query = query.Where(r => r.RegisterDetail.Owner.Name.Contains(filter.ownerName));
+                query = query.Where(r => r.RegisterDetail.Owner.Name.Contains(filter.ownerName) || r.RegisterDetail.Name.Contains(filter.ownerName));
             }
 
             if (!string.IsNullOrEmpty(filter.contestName))
@@ -72,6 +72,16 @@ namespace KoiMuseum.Data.Repositories
             };
 
             return pageResult;
+        }
+
+        public async Task<Registration> findById(int id)
+        {
+            return await _context.Registrations
+                        .Include(r => r.RegisterDetail)
+                        .ThenInclude(rd => rd.Owner)
+                        .Include(r => r.RegisterDetail)
+                        .ThenInclude(rd => rd.Rank)
+                        .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<int> CountContestantsParticipatingByRankName(string rankName)

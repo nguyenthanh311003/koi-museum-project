@@ -13,5 +13,10 @@ namespace KoiMuseum.Data.Repositories
         public RankRepository() { }
 
         public RankRepository(Fa24Se172594Prn231G1KfsContext context) => _context = context;
+
+        public async Task<Rank> GetRankByNameAsync(string rankName)
+        {
+            return _context.Ranks.FirstOrDefault(r => r.Name.Equals(rankName));
+        }
     }
 }

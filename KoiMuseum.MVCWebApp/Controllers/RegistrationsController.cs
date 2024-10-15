@@ -23,11 +23,16 @@ namespace KoiMuseum.MVCWebApp.Controllers
             return View();
         }
 
-        public async Task<IActionResult> RegistrationsOfRank(string name, string contestName, int pageNumber = 1, int pageSize = 1)
+        public IActionResult KoiDetail()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> RegistrationsOfRank(string name, string contestName, string ownerName = "", int pageNumber = 1, int pageSize = 10)
         {
             using (var httpClient = new HttpClient())
             {
-                var queryString = $"?contestName={Uri.EscapeDataString(contestName)}&rankName={Uri.EscapeDataString(name)}&pageNumber={pageNumber}&pageSize={pageSize}";
+                var queryString = $"?contestName={Uri.EscapeDataString(contestName)}&rankName={Uri.EscapeDataString(name)}&ownerName={Uri.EscapeDataString(ownerName)}&pageNumber={pageNumber}&pageSize={pageSize}";
 
                 var queryStringToCount = $"?rankName={Uri.EscapeDataString(name)}";
 
@@ -65,6 +70,7 @@ namespace KoiMuseum.MVCWebApp.Controllers
                             ViewBag.RegistrationCount = countResult.Data;
                             ViewBag.RankName = name;
                             ViewBag.ContestName = contestName;
+                            ViewBag.OwnerName = ownerName;  // Thêm viewbag để lưu ownerName
                             return View(pagedResult);
                         }
                     }
