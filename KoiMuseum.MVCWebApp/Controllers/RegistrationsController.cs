@@ -40,64 +40,10 @@ namespace KoiMuseum.MVCWebApp.Controllers
             return View(new List<RegistrationResponse>());
         }
 
-        /*public async Task<IActionResult> RegistrationsOfRank(string name, string contestName, int pageNumber = 1, int pageSize = 1)
+        public IActionResult KoiDetail()
         {
-            using (var httpClient = new HttpClient())
-            {
-                var queryString = $"?contestName={Uri.EscapeDataString(contestName)}&rankName={Uri.EscapeDataString(name)}&pageNumber={pageNumber}&pageSize={pageSize}";
-
-                var queryStringToCount = $"?rankName={Uri.EscapeDataString(name)}";
-
-                // Fetch the paged registrations
-                var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations/Registrationss" + queryString);
-
-                // Fetch the total count of registrations
-                var countResponse = await httpClient.GetAsync(Const.APIEndPoint + "Registrations/counts" + queryStringToCount);
-
-                if (response.IsSuccessStatusCode && countResponse.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-
-                    var countContent = await countResponse.Content.ReadAsStringAsync();
-                    var countResult = JsonConvert.DeserializeObject<ServiceResult>(countContent);
-
-                    if (result != null && result.Data != null)
-                    {
-                        var data = JsonConvert.DeserializeObject<RegistrationPagedResult>(result.Data.ToString());
-
-                        if (data != null)
-                        {
-                            var totalItems = data.TotalItems;
-
-                            var pagedResult = new PagedResult<RegistrationResponse>
-                            {
-                                Items = data.Items,
-                                TotalItems = totalItems,
-                                PageNumber = pageNumber,
-                                PageSize = pageSize
-                            };
-
-                            ViewBag.PagedResult = pagedResult;
-                            ViewBag.RegistrationCount = countResult.Data;
-                            ViewBag.RankName = name;
-                            ViewBag.ContestName = contestName;
-                            return View(pagedResult);
-                        }
-                    }
-                }
-
-                ViewBag.PagedResult = new PagedResult<RegistrationResponse>
-                {
-                    Items = new List<RegistrationResponse>(),
-                    TotalItems = 0,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize
-                };
-
-                return View(new PagedResult<RegistrationResponse>());
-            }
-        }*/
+            return View();
+        }
 
         public async Task<IActionResult> RegistrationsOfRank(string name, string contestName, string ownerName = "", int pageNumber = 1, int pageSize = 10)
         {

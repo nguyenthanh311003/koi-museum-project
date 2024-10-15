@@ -26,16 +26,19 @@
         @foreach (var item in Model.Items)
         {
             <div class="col-md-4">
+                <a class="link-fish" href="/Registrations/KoiDetail?id=@item.Id">
                 <div class="card">
                     <div class="image-container">
                         <img class="card-img-top" src="https://aquariumcare.vn/upload/sanpham/ca-koi-bieu-tuong-cua-su-may-man-va-thinh-vuong-755.jpg" alt="@item.ImageUrl">
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">@item.Name</h5>
+                        <h5 class="card-title">@item.Name
+                        </h5>
                         <p class="card-text">Species: @item.Type</p>
                         <p class="card-text">Owner: @item.OwnerName</p>
                     </div>
                 </div>
+                </a>
             </div>
         }
     </div>
@@ -78,6 +81,10 @@ else
         color: #1a1a1a;
         letter-spacing: 2px;
         text-transform: uppercase;
+    }
+
+    .link-fish {
+        text-decoration: none;
     }
 
     .row {

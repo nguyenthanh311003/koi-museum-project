@@ -12,6 +12,10 @@
 
         public int? Age { get; set; }
 
+        public string? Weight { get; set; }
+
+        public string? Gender { get; set; }
+
         public string? ColorPattern { get; set; }
 
         public string? OwnerName { get; set; }
