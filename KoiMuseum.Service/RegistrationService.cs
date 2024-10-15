@@ -13,6 +13,7 @@ namespace KoiMuseum.Service
         Task<IServiceResult> GetAllV2();
         Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter);
         Task<IServiceResult> GetById(int id);
+        Task<IServiceResult> GetByIdWithCombineRegisterDetailResponse(int id);
         Task<IServiceResult> CountContestantsParticipating(string rankId); 
 
         /// <summary>
@@ -216,6 +217,49 @@ namespace KoiMuseum.Service
             return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
         }
 
+        public async Task<IServiceResult> GetByIdWithCombineRegisterDetailResponse(int id)
+        {
+            try
+            {
+                var registerGetById = await _unitOfWork.RegistrationRepository.findById(id);
+
+                if (registerGetById == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+                }
+
+                // Tạo danh sách kết quả
+                var response = new RegistrationResponse
+                {
+                    Id = registerGetById.Id,
+                    ImageUrl = null,
+                    Weight = registerGetById.RegisterDetail?.Weight,
+                    Gender = registerGetById.RegisterDetail?.Gender,
+                    Size = registerGetById.RegisterDetail?.Size,
+                    Age = registerGetById.RegisterDetail?.Age,
+                    OwnerName = registerGetById.RegisterDetail?.Owner?.Name,
+                    Name = registerGetById.RegisterDetail?.Name,
+                    Type = registerGetById.RegisterDetail?.Type,
+                    Rank = registerGetById.RegisterDetail?.Rank?.Name,
+                    ContestName = registerGetById.Contest?.Name,
+                    RegistrationDate = registerGetById.CreatedDate,
+                    ApprovalDate = registerGetById.ApprovalDate,
+                    RejectedReason = registerGetById.RejectedReason,
+                    ConfirmationCode = registerGetById.ConfirmationCode,
+                    IntroductionOfOwner = registerGetById.IntroductionOfOwner,
+                    IntroductionOfKoi = registerGetById.IntroductionOfKoi,
+                    Status = registerGetById.Status,
+                    AdminReviewedBy = registerGetById.AdminReviewedBy,
+                    UpdatedDate = registerGetById.RegisterDetail?.UpdatedDate,
+                    UpdatedBy = registerGetById.RegisterDetail?.UpdatedBy
+                };
+
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+            } catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+        }
 
         public async Task<IServiceResult> Save(Registration registration)
         {
@@ -244,56 +288,13 @@ namespace KoiMuseum.Service
             }
         }
 
-        /*public async Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter)
-        {
-            try
-            {
-                var registrations = await _unitOfWork.RegistrationRepository.SearchRegistrationsAsync(searchRegistrationFilter);
-
-                if (registrations == null || !registrations.Any())
-                {
-                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
-                }
-
-                var response = registrations.Select(r => new RegistrationResponse
-                {
-                    Id = r.Id,
-                    ImageUrl = null,
-                    Size = r.RegisterDetail?.Size,
-                    Age = r.RegisterDetail?.Age,
-                    OwnerName = r.RegisterDetail?.Owner?.Name,
-                    Name = r.RegisterDetail?.Name,
-                    Type = r.RegisterDetail?.Type,
-                    Rank = r.RegisterDetail?.Rank?.Name,
-                    ContestName = r.Contest?.Name,
-                    RegistrationDate = r.CreatedDate,
-                    ApprovalDate = r.ApprovalDate,
-                    RejectedReason = r.RejectedReason,
-                    ConfirmationCode = r.ConfirmationCode,
-                    IntroductionOfOwner = r.IntroductionOfOwner,
-                    IntroductionOfKoi = r.IntroductionOfKoi,
-                    Status = r.Status,
-                    AdminReviewedBy = r.AdminReviewedBy,
-                    UpdatedDate = r.RegisterDetail?.UpdatedDate,
-                    UpdatedBy = r.RegisterDetail?.UpdatedBy
-                }).ToList();
-
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
-            }
-
-        }*/
-
         public async Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter)
         {
             try
             {
                 // Lấy các giá trị phân trang từ searchRegistrationFilter
                 int pageNumber = searchRegistrationFilter.PageNumber;
-                int pageSize = 1;
+                int pageSize = searchRegistrationFilter.PageSize;
 
                 // Gọi phương thức repository để tìm kiếm và phân trang
                 var pagedResult = await _unitOfWork.RegistrationRepository.SearchRegistrationsPagedAsync(searchRegistrationFilter, pageNumber, pageSize);
