@@ -1,9 +1,9 @@
-﻿using KoiMuseum.Data.Models;
+﻿using KoiMuseum.Common;
+using KoiMuseum.Data.Dtos.Responses.Registration;
+using KoiMuseum.Data.Models;
 using KoiMuseum.Data.PagingModel;
 using KoiMuseum.Service.Base;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace KoiMuseum.MVCWebApp.Controllers
@@ -20,22 +20,6 @@ namespace KoiMuseum.MVCWebApp.Controllers
         // GET: Registrations
         public async Task<IActionResult> Index()
         {
-            //using (var httpClient = new HttpClient())
-            //{
-            //    var response = await httpClient.GetAsync(Const.APIEndPoint + "Registrations");
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var content = await response.Content.ReadAsStringAsync();
-            //        var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-            //        if (result != null && result.Data != null)
-            //        {
-            //            var data = JsonConvert.DeserializeObject<List<RegistrationResponse>>(result.Data.ToString());
-            //            return View(data);
-            //        }
-            //    }
-            //}
-
-            //return View(new List<RegistrationResponse>());
             return View();
         }
 
@@ -98,10 +82,10 @@ namespace KoiMuseum.MVCWebApp.Controllers
             }
         }
 
-        public IActionResult Search(string searchString)
-        {
-            // Store the current search string for use in the view
-            ViewData["CurrentFilter"] = searchString;
+        //public IActionResult Search(string searchString)
+        //{
+        // Store the current search string for use in the view
+        //  ViewData["CurrentFilter"] = searchString;
         //public IActionResult Search(string searchString)
         //{
         //    // Store the current search string for use in the view
@@ -124,31 +108,16 @@ namespace KoiMuseum.MVCWebApp.Controllers
         //    return View(registrations.ToList());
         //}
 
-        //// GET: Registrations/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: Registrations/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var content = await response.Content.ReadAsStringAsync();
-        //            var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-        //            if (result != null && result.Data != null)
-        //            {
-        //                var registration = JsonConvert.DeserializeObject<RegistrationResponse>(result.Data.ToString());
-        //                return View(registration);
-        //            }
-        //        }
-        //    }
-
-        //    return NotFound();
-        //}
+            return View(id);
+        }
 
         //// GET: Registrations/Create
         //public async Task<IActionResult> Create()
@@ -183,32 +152,10 @@ namespace KoiMuseum.MVCWebApp.Controllers
         //    return View(registration);
         //}
 
-        //// GET: Registrations/Edit/5
+        //   GET: Registrations/Edit/5
         //public async Task<IActionResult> Edit(int? id)
         //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        var response = await httpClient.GetAsync(Const.APIEndPoint + $"Registrations/{id}");
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var content = await response.Content.ReadAsStringAsync();
-        //            var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-        //            if (result != null && result.Data != null)
-        //            {
-        //                var registration = JsonConvert.DeserializeObject<Registration>(result.Data.ToString());
-        //                ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
-        //                ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
-        //                return View(registration);
-        //            }
-        //        }
-        //    }
-
-        //    return NotFound();
+        //    return View(id);
         //}
 
         //// POST: Registrations/Edit/5
@@ -330,3 +277,4 @@ namespace KoiMuseum.MVCWebApp.Controllers
 
     }
 }
+

@@ -11,10 +11,10 @@ namespace KoiMuseum.Service
     public interface IRegistrationService
     {
         Task<IServiceResult> GetAll();
-        Task<IServiceResult> GetAllV2();
+        Task<IServiceResult> GetAllV2(int page, int limit);
         Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter);
         Task<IServiceResult> GetById(int id);
-        Task<IServiceResult> CountContestantsParticipating(string rankId); 
+        Task<IServiceResult> CountContestantsParticipating(string rankId);
 
         /// <summary>
         /// Retrieves a registration by its ID, including related entities such as `RegisterDetail.Owner` and `Contest`.
@@ -27,7 +27,7 @@ namespace KoiMuseum.Service
         Task<IServiceResult> GetByIdV2(int id);
 
         Task<IServiceResult> Save(Registration registration);
-        Task<IServiceResult> ChangeStatus(int id, string status);
+        Task<IServiceResult> ChangeStatus(int id, string status, string confirmCode);
         Task<IServiceResult> DeleteById(int id);
     }
 
@@ -40,49 +40,6 @@ namespace KoiMuseum.Service
             _unitOfWork ??= new UnitOfWork();
         }
 
-        /// <summary>
-        /// Changes the status of a registration by its ID to the specified status.
-        /// </summary>
-        /// <param name="id">The ID of the registration whose status needs to be changed.</param>
-        /// <param name="status">The new status to apply to the registration.</param>
-        /// <returns>
-        /// Returns an `IServiceResult` indicating the success or failure of the status change.
-        /// </returns>
-        public async Task<IServiceResult> ChangeStatus(int id, string status)
-        {
-            // Fetch the registration by ID
-            var registration = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
-
-            // Check if the registration exists
-            if (registration == null)
-            {
-                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
-            }
-
-            // Validate the new status
-            var validStatuses = new List<string> { "CANCEL", "APPROVE", "REJECT" };
-            if (!validStatuses.Contains(status))
-            {
-                return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, "Invalid status.");
-            }
-
-            // Check if the registration is already in the desired status
-            if (registration.Status == status)
-            {
-                return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Registration is already in {status} status.");
-            }
-
-
-            // Update the registration's status to the new status
-            registration.Status = status;
-            registration.UpdatedDate = DateTime.Now;
-
-            // Save the updated registration to the database
-            await _unitOfWork.RegistrationRepository.UpdateAsync(registration);
-
-            // Return success response with the updated registration details
-            return new ServiceResult(Const.SUCCESS_UPDATE_CODE, $"Status changed to {status} successfully.", registration);
-        }
 
         public async Task<IServiceResult> CountContestantsParticipating(string rankName)
         {
@@ -96,36 +53,12 @@ namespace KoiMuseum.Service
                 }
 
                 return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, countContestantsParticipating);
-            } catch (Exception ex)
-            {
-                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
-            }
-        }
-
-        public async Task<IServiceResult> DeleteById(int id)
-        {
-            try
-            {
-                var registrationById = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
-                if (registrationById == null)
-                {
-                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new Registration());
-                }
-
-                bool isDelete = await _unitOfWork.RegistrationRepository.RemoveAsync(registrationById);
-                if (!isDelete)
-                {
-                    return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, registrationById);
-                }
-
-                return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, registrationById);
             }
             catch (Exception ex)
             {
                 return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
             }
         }
-
         public async Task<IServiceResult> GetAll()
         {
             var registrations = await _unitOfWork.RegistrationRepository.GetAllAsync();
@@ -133,39 +66,63 @@ namespace KoiMuseum.Service
                 ? new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG)
                 : new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registrations);
         }
-        public async Task<IServiceResult> GetAllV2()
+        public async Task<IServiceResult> GetAllV2(int pageNumber = 1, int pageSize = 10)
         {
-            // Get all registrations and include necessary related entities
-            var registrations = await _unitOfWork.RegistrationRepository.GetAllAsync("RegisterDetail.Owner", "Contest");
+            // Calculate the number of items to skip based on the current page number
+            int skip = (pageNumber - 1) * pageSize;
+
+            // Get all registrations, including necessary related entities
+            var registrations = await _unitOfWork.RegistrationRepository
+                .GetAllAsync("RegisterDetail.Owner", "Contest");
 
             if (registrations == null || !registrations.Any())
             {
                 return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
             }
 
-            var response = registrations.Select(r => new RegistrationResponse
-            {
-                Id = r.Id,
-                ImageUrl = null,
-                Size = r.RegisterDetail?.Size,
-                Age = r.RegisterDetail?.Age,
-                OwnerName = r.RegisterDetail?.Owner?.Name,
-                Rank = r.RegisterDetail?.Rank?.Name,
-                ContestName = r.Contest?.Name,
-                RegistrationDate = r.CreatedDate,
-                ApprovalDate = r.ApprovalDate,
-                RejectedReason = r.RejectedReason,
-                ConfirmationCode = r.ConfirmationCode,
-                IntroductionOfOwner = r.IntroductionOfOwner,
-                IntroductionOfKoi = r.IntroductionOfKoi,
-                Status = r.Status,
-                AdminReviewedBy = r.AdminReviewedBy,
-                UpdatedDate = r.RegisterDetail?.UpdatedDate,
-                UpdatedBy = r.RegisterDetail?.UpdatedBy
-            }).ToList();
+            // Get the total count of registrations
+            int totalItems = registrations.Count();
 
-            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+            // Apply pagination by skipping and taking the specified number of items
+            var pagedRegistrations = registrations
+                .Skip(skip)
+                .Take(pageSize)
+                .Select(r => new RegistrationResponse
+                {
+                    Id = r.Id,
+                    ImageUrl = null,
+                    Size = r.RegisterDetail?.Size,
+                    Age = r.RegisterDetail?.Age,
+                    OwnerName = r.RegisterDetail?.Owner?.Name,
+                    Type = r.RegisterDetail?.Type,
+                    Rank = r.RegisterDetail?.Rank?.Name,
+                    ContestName = r.Contest?.Name,
+                    RegistrationDate = r.CreatedDate,
+                    ApprovalDate = r.ApprovalDate,
+                    RejectedReason = r.RejectedReason,
+                    ConfirmationCode = r.ConfirmationCode,
+                    IntroductionOfOwner = r.IntroductionOfOwner,
+                    IntroductionOfKoi = r.IntroductionOfKoi,
+                    Status = r.Status,
+                    AdminReviewedBy = r.AdminReviewedBy,
+                    UpdatedDate = r.RegisterDetail?.UpdatedDate,
+                    UpdatedBy = r.RegisterDetail?.UpdatedBy
+                })
+                .ToList();
+
+            // Create the paginated result
+            var pagedResult = new PagedResult<RegistrationResponse>
+            {
+                Items = pagedRegistrations,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            // Return the paginated result as a successful service result
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, pagedResult);
         }
+
         public async Task<IServiceResult> GetById(int id)
         {
             var registrationById = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
@@ -224,7 +181,7 @@ namespace KoiMuseum.Service
             }
         }
 
-        public async Task<IServiceResult> ChangeStatus(int id, string status)
+        public async Task<IServiceResult> ChangeStatus(int id, string status, string confirmCode)
         {
             var registration = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
             if (registration == null)
@@ -237,7 +194,13 @@ namespace KoiMuseum.Service
             {
                 return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, "Invalid status.");
             }
-
+            if (status.Equals("CHECKIN"))
+            {
+                if (!registration.ConfirmationCode.Equals(confirmCode))
+                {
+                    return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Confirm Code did not match");
+                }
+            }
             if (registration.Status == status)
             {
                 return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Registration is already in {status} status.");
@@ -265,6 +228,7 @@ namespace KoiMuseum.Service
                 {
                     return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG);
                 }
+                return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG);
             }
             catch (Exception ex)
             {

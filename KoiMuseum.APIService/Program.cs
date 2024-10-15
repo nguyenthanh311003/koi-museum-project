@@ -25,18 +25,24 @@ PayOS payOS = new PayOS(
     builder.Configuration["PayOS:ChecksumKey"] ?? Environment.GetEnvironmentVariable("PAYOS_CHECKSUM_KEY")
 );
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("https://localhost:7232")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 
 // Register PayOS as a singleton service
 builder.Services.AddSingleton(payOS);
 var app = builder.Build();
-
+app.UseCors("AllowSpecificOrigin");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

@@ -1,4 +1,5 @@
-﻿using KoiMuseum.Data.Filters;
+﻿using KoiMuseum.Data.Dtos.Requests.Registration;
+using KoiMuseum.Data.Filters;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service;
 using KoiMuseum.Service.Base;
@@ -19,9 +20,9 @@ namespace KoiMuseum.APIService.Controllers
 
         // GET: api/Registrations
         [HttpGet]
-        public async Task<IServiceResult> GetRegistrations()
+        public async Task<IServiceResult> GetRegistrations(int page, int limit)
         {
-            return await _registrationService.GetAllV2();
+            return await _registrationService.GetAllV2(page, limit);
         }
 
         [HttpGet("Registrationss")]
@@ -66,11 +67,13 @@ namespace KoiMuseum.APIService.Controllers
         }
 
         // PUT: api/Registrations/ChangeStatus/5
+
         [HttpPut("ChangeStatus/{id}")]
-        public async Task<IServiceResult> ChangeStatus(int id, [FromQuery] string status)
+        public async Task<IServiceResult> ChangeStatus(int id, [FromBody] ChangeStatusRequest request)
         {
             // Call the service to change the status
-            return await _registrationService.ChangeStatus(id, status);
+            return await _registrationService.ChangeStatus(id, request.Status, request.ConfirmationCode);
         }
+
     }
 }

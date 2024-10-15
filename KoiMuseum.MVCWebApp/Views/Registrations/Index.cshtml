@@ -20,24 +20,22 @@
 <table class="table table-striped" id="registrationTable">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ImageUrl)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Size)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Age)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ColorPattern)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().OwnerName)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Rank)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ContestName)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().RegistrationDate)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ApprovalDate)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().RejectedReason)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().ConfirmationCode)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().IntroductionOfOwner)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().IntroductionOfKoi)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Status)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().AdminReviewedBy)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().UpdatedDate)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().UpdatedBy)</th>
-            <th></th>
+            <th>Image</th>
+            <th>Size</th>
+            <th>Age</th>
+            <th>Type</th>
+            <th>Owner Name</th>
+            <th>Rank</th>
+            <th>Contest Name</th>
+            <th>Registration Date</th>
+            <th>Approval Date</th>
+            <th>Rejected Reason</th>
+            <th>Confirmation Code</th>
+            <th>Introduction of Owner</th>
+            <th>Introduction of Koi</th>
+            <th>Status</th>
+            <th>Admin Reviewed By</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody id="registrationTableBody">
@@ -85,20 +83,19 @@
 
         function loadRegistrations(searchString = '') {
             $.ajax({
-                url: '/api/Registrations', // Adjust to your API endpoint
+                url: 'https://localhost:7028/api/Registrations', // Adjust to your API endpoint
                 type: 'GET',
                 data: { page: currentPage, limit: limit, searchString: searchString },
                 success: function (data) {
                     $('#registrationTableBody').empty(); // Clear previous results
-
-                    if (data && data.data && data.data.length > 0) {
-                        data.data.forEach(function (item) {
+                    if (data && data.data && data.data.items.length > 0){
+                        data.data.items.forEach(function (item) {
                             $('#registrationTableBody').append(`
                                         <tr>
                                             <td><img src="${item.imageUrl}" alt="Koi Image" style="max-height: 100px;" /></td>
                                             <td>${item.size}</td>
                                             <td>${item.age}</td>
-                                            <td>${item.colorPattern}</td>
+                                            <td>${item.type}</td>
                                             <td>${item.ownerName}</td>
                                             <td>${item.rank}</td>
                                             <td>${item.contestName}</td>
@@ -110,10 +107,8 @@
                                             <td>${item.introductionOfKoi}</td>
                                             <td>${item.status}</td>
                                             <td>${item.adminReviewedBy}</td>
-                                            <td>${item.updatedDate}</td>
-                                            <td>${item.updatedBy}</td>
-                                            <td><a href="/Registration/Details/${item.id}" class="btn btn-sm btn-info">Details</a></td>
-                                        </tr>
+                                              <td><a href="/Registrations/Details/${item.id}" class="btn btn-sm btn-info">Details</a></td>
+                                                </tr>
                                     `);
                         });
                     } else {

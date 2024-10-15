@@ -1,9 +1,36 @@
-﻿@model KoiMuseum.Data.Dtos.Responses.Registration.RegistrationResponse
+﻿@model int // Pass the Registration Id as the model
 
 @{
     ViewData["Title"] = "Details";
 }
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Modal for Confirmation Code -->
+<div class="modal fade" id="confirmCodeModal" tabindex="-1" role="dialog" aria-labelledby="confirmCodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmCodeModalLabel">Enter Confirmation Code</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="confirmCodeForm">
+                    <div class="form-group">
+                        <label for="confirmationCode">Confirmation Code</label>
+                        <input type="text" class="form-control" id="confirmationCode" required>
+                    </div>
+                    <input type="hidden" id="checkinId">
+                    <input type="hidden" id="checkinStatus" value="CHECKIN">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitConfirmCode">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <h1>Details</h1>
 
@@ -11,119 +38,147 @@
     <h4>Registration Details</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.RegistrationDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.RegistrationDate)
-        </dd>
+        <dt class="col-sm-2">Registration Date</dt>
+        <dd class="col-sm-10" id="registrationDate"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ApprovalDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ApprovalDate)
-        </dd>
+        <dt class="col-sm-2">Approval Date</dt>
+        <dd class="col-sm-10" id="approvalDate"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.RejectedReason)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.RejectedReason)
-        </dd>
+        <dt class="col-sm-2">Rejected Reason</dt>
+        <dd class="col-sm-10" id="rejectedReason"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ConfirmationCode)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ConfirmationCode)
-        </dd>
+        <dt class="col-sm-2">Confirmation Code</dt>
+        <dd class="col-sm-10" id="confirmationCode"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IntroductionOfOwner)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IntroductionOfOwner)
-        </dd>
+        <dt class="col-sm-2">Introduction of Owner</dt>
+        <dd class="col-sm-10" id="introductionOfOwner"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IntroductionOfKoi)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IntroductionOfKoi)
-        </dd>
+        <dt class="col-sm-2">Introduction of Koi</dt>
+        <dd class="col-sm-10" id="introductionOfKoi"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.AdminReviewedBy)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.AdminReviewedBy)
-        </dd>
-        </dd>
+        <dt class="col-sm-2">Admin Reviewed By</dt>
+        <dd class="col-sm-10" id="adminReviewedBy"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedDate)
-        </dd>
+        <dt class="col-sm-2">Updated Date</dt>
+        <dd class="col-sm-10" id="updatedDate"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedBy)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedBy)
-        </dd>
+        <dt class="col-sm-2">Updated By</dt>
+        <dd class="col-sm-10" id="updatedBy"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ContestName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ContestName)
-        </dd>
+        <dt class="col-sm-2">Contest Name</dt>
+        <dd class="col-sm-10" id="contestName"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.OwnerName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.OwnerName)
-        </dd>
+        <dt class="col-sm-2">Owner Name</dt>
+        <dd class="col-sm-10" id="ownerName"></dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Rank)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Rank)
-        </dd>
+        <dt class="col-sm-2">Rank</dt>
+        <dd class="col-sm-10" id="rank"></dd>
     </dl>
 </div>
 
-<!-- Button to Approve or Reject the Registration -->
-<!-- Buttons for Approve and Reject -->
 <div>
-    <!-- Properly pass id and status in function -->
-    <a href="javascript:void(0)" onclick="changeStatus(@Model.Id, 'APPROVE')">Approve</a>
-    <a href="javascript:void(0)" onclick="changeStatus(@Model.Id, 'CHECKIN')">CheckIn</a>
-    <a href="javascript:void(0)" onclick="changeStatus(@Model.Id, 'REJECT')">Reject</a>
+    <a href="javascript:void(0)" onclick="changeStatus(@Model, 'APPROVE')">Approve</a>
+    <a href="javascript:void(0)" onclick="changeStatus(@Model, 'CHECKIN')">CheckIn</a>
+    <a href="javascript:void(0)" onclick="changeStatus(@Model, 'REJECT')">Reject</a>
+
     <a asp-action="Index">Back to List</a>
 </div>
 
 <script>
+    $(document).ready(function () {
+        const id = @Model; // Correctly gets the passed registration Id
+        loadRegistrationDetails(id);
+    });
+
+    function loadRegistrationDetails(id) {
+        $.ajax({
+            url: `https://localhost:7028/api/Registrations/${id}`, // Adjust the API endpoint as needed
+            type: 'GET',
+            success: function (data) {
+                // Assuming the API returns the registration data in `data.data`
+                $('#registrationDate').text(data.data.registrationDate || 'N/A');
+                $('#approvalDate').text(data.data.approvalDate || 'N/A');
+                $('#rejectedReason').text(data.data.rejectedReason || 'N/A');
+                $('#confirmationCode').text(data.data.confirmationCode || 'N/A');
+                $('#introductionOfOwner').text(data.data.introductionOfOwner || 'N/A');
+                $('#introductionOfKoi').text(data.data.introductionOfKoi || 'N/A');
+                $('#adminReviewedBy').text(data.data.adminReviewedBy || 'N/A');
+                $('#updatedDate').text(data.data.updatedDate || 'N/A');
+                $('#updatedBy').text(data.data.updatedBy || 'N/A');
+                $('#contestName').text(data.data.contestName || 'N/A');
+                $('#ownerName').text(data.data.ownerName || 'N/A');
+                $('#rank').text(data.data.rank || 'N/A');
+            },
+            error: function (xhr) {
+                alert("Error: " + xhr.responseText);
+            }
+        });
+    }
+
     function changeStatus(id, status) {
-        if (confirm(`Are you sure you want to ${status.toLowerCase()} this registration?`)) {
+        if (status === 'CHECKIN') {
+            // Show the modal for entering the confirmation code
+            $('#checkinId').val(id); // Set the registration ID in the hidden field
+            $('#confirmCodeModal').modal('show');
+        } else {
+            // Confirm for other statuses
+            if (confirm(`Are you sure you want to ${status.toLowerCase()} this registration?`)) {
+                callChangeStatusApi(id, status); // Directly call the API for other statuses
+            }
+        }
+    }
+
+    // Function to call the ChangeStatus API
+    function callChangeStatusApi(id, status) {
+        $.ajax({
+            url: `https://localhost:7028/api/Registrations/ChangeStatus/${id}`, // URL without status in query
+            type: 'PUT', // Use PUT method
+            contentType: 'application/json',
+            data: JSON.stringify(status), // Send status as JSON string in the body
+            success: function (response) {
+                alert(response); // Display success message
+                window.location.reload(); // Reload the page to see changes
+            },
+            error: function (xhr) {
+                alert("Error: " + xhr.responseText); // Show error message
+            }
+        });
+    }
+
+    // Handle the submission of the confirmation code
+    $('#submitConfirmCode').on('click', function () {
+        const id = $('#checkinId').val();
+        const status = $('#checkinStatus').val();
+        const confirmationCode = $('#confirmationCode').val();
+
+        // Validate the confirmation code input
+        if (confirmationCode) {
+            // Create the request body
+            const requestBody = {
+                Status: status,
+                ConfirmationCode: confirmationCode
+            };
+
+            // Call the ChangeStatus API with the status and confirmation code as part of the request body
             $.ajax({
-                url: '@Url.Action("ChangeStatus", "Registrations")',
-                type: 'POST',
+                url: `https://localhost:7028/api/Registrations/ChangeStatus/${id}`,
+                type: 'PUT',
                 contentType: 'application/json',
-                data: JSON.stringify({ id: id, status: status }), // Properly pass id and status
+                data: JSON.stringify(requestBody), // Send the request body
                 success: function (response) {
-                    alert(response); // Show success message
+                    alert(response.message); // Display success message
+                    $('#confirmCodeModal').modal('hide'); // Hide the modal
                     window.location.reload(); // Reload the page to see changes
                 },
                 error: function (xhr) {
                     alert("Error: " + xhr.responseText); // Show error message
                 }
             });
+        } else {
+            alert("Please enter a confirmation code."); // Prompt user to enter a confirmation code
         }
-    }
+    });
+
+
+
 </script>
