@@ -26,7 +26,7 @@ namespace KoiMuseum.Data.Repositories
             // Áp dụng các bộ lọc nếu có
             if (!string.IsNullOrEmpty(filter.ownerName))
             {
-                query = query.Where(r => r.RegisterDetail.Owner.Name.Contains(filter.ownerName));
+                query = query.Where(r => r.RegisterDetail.Owner.Name.Contains(filter.ownerName) || r.RegisterDetail.Name.Contains(filter.ownerName));
             }
 
             if (!string.IsNullOrEmpty(filter.contestName))

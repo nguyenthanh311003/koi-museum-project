@@ -2,14 +2,18 @@
 
 @{
     ViewData["Title"] = "Registration List Of Rank";
+    var contestName = ViewBag.ContestName as string ?? "";
+    var rankName = ViewBag.RankName as string ?? "";
 }
 
 @if (Model?.Items != null && Model.Items.Any())
 {
     <h1>There are @ViewBag.RegistrationCount contestants participating</h1>
     <div class="search-container">
-        <form method="GET" action="/Registrations/Search">
-            <input type="text" name="searchQuery" class="search-input" placeholder="Search by fish name or owner name...">
+        <form method="GET" action="/Registrations/RegistrationsOfRank">
+            <input type="hidden" name="contestName" value="@contestName" />
+            <input type="hidden" name="name" value="@rankName" /> 
+            <input type="text" name="ownerName" class="search-input" placeholder="Search by owner name or fish name..." value="@ViewBag.OwnerName">
             <button type="submit" class="search-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
                     <circle cx="11" cy="11" r="8"></circle>
