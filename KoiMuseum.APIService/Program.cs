@@ -29,7 +29,7 @@ PayOS payOS = new PayOS(
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://localhost:7232")
+        builder => builder.WithOrigins("https://localhost:7212")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
