@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service;
 using KoiMuseum.Service.Base;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.AspNetCore.Identity.Data;
+using KoiMuseum.Data.Dtos.Requests.User;
 
 namespace KoiMuseum.APIService.Controllers
 {
@@ -16,10 +19,12 @@ namespace KoiMuseum.APIService.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly JwtService _jwtService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, JwtService jwtService)
         {
             _userService = userService;
+            _jwtService = jwtService;
         }
 
         // GET: api/Users
@@ -59,6 +64,93 @@ namespace KoiMuseum.APIService.Controllers
         public async Task<IServiceResult> DeleteUser(int id)
         {
             return await _userService.DeleteById(id);
+        }
+
+
+        //=================================================================================================//
+        //=================================================================================================//
+        //=================================================================================================//
+        //=================================================================================================//
+        //========================================AUTHENTICATION===========================================//
+
+        [HttpGet("/api/v1/auth")]
+        public IActionResult Hello()
+        {
+            return Ok("Success");
+        }
+
+        [HttpPost("/api/v1/register")]
+        public async Task<IServiceResult> Register(CreateUserRequest createUserRequest)
+        {
+            var user = new User
+            {
+                Name = createUserRequest.Name,
+                Email = createUserRequest.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(createUserRequest.Password),
+                Role = createUserRequest.Role,
+                Status = "Active",
+                Description = "Amateur Koi enthusiast",
+                PhoneNumber = createUserRequest.PhoneNumber,
+                Address = createUserRequest.Address,
+                AvatarUrl = createUserRequest.AvatarUrl,
+                CreatedBy = null,
+                CreatedDate = DateTime.Now,
+                UpdatedBy = null,
+                UpdatedDate = DateTime.Now
+            };
+
+            return await _userService.Save(user);
+        }
+
+        [HttpPost("/api/v1/login")]
+        public IActionResult Login(LoginRequest request)
+        {
+            var user = _userService.GetByEmail(request.Email);
+
+            if (user == null)
+            {
+                return BadRequest(new { message = "Invalid credentials" });
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+            {
+                return BadRequest(new { message = "Invalid credentials" });
+            }
+
+            var jwt = _jwtService.Generate(user.Id);
+
+            Response.Cookies.Append("jwt", jwt, new CookieOptions { HttpOnly = true });
+
+            return Ok(new { message = "success" });
+        }
+
+        [HttpGet("/api/v1/get-logged-user")]
+        public async Task<IServiceResult> User()
+        {
+            try
+            {
+                var jwt = Request.Cookies["jwt"];
+
+                var token = _jwtService.Verify(jwt);
+
+                int id = int.Parse(token.Issuer);
+
+                var user = await _userService.GetById(id);
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        [HttpPost("/api/v1/logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("jwt");
+            return Ok(new { message = "success" });
         }
 
     }

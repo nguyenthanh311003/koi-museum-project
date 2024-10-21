@@ -16,6 +16,10 @@
     <div class="koi-info">
         <div class="koi-image">
             <img src="https://aquariumcare.vn/upload/sanpham/ca-koi-bieu-tuong-cua-su-may-man-va-thinh-vuong-755.jpg" alt="Neymarw">
+            <div class="score-box">
+                <input type="number" id="score-input" class="score-input" placeholder="Enter score" min="0" max="100">
+                <button id="score-submit" class="score-submit">Submit</button>
+            </div>
         </div>
 
         <div class="koi-details-content">
@@ -88,6 +92,13 @@
         align-items: center;
         flex-wrap: wrap;
     }
+    .koi-image{
+        display:flex;
+        /* justify-content: center; */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 
     .koi-image img {
         width: 350px;
@@ -96,6 +107,8 @@
         object-fit: cover;
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        display: flex;
+ 
     }
 
         .koi-image img:hover {
@@ -158,6 +171,74 @@
             .koi-actions .btn + .btn {
                 margin-left: 15px;
             }
+             /* css input score */
+
+    .score-box {
+        width: 300px;
+        height: 150px;
+        border: 2px solid blue;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        margin-top: 10%;
+    }
+
+        .score-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+    .score-input {
+        width: 80%;
+        padding: 15px;
+        font-size: 1.2em;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        text-align: center;
+        transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+        .score-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        .score-input::placeholder {
+            color: #95a5a6;
+            opacity: 1; /* Firefox */
+        }
+         /* btn-submit */
+    .score-submit {
+        padding: 10px 20px;
+        font-size: 1.2em;
+        color: #fff;
+        background-color: #3498db;
+        border: none;
+        border-radius: 10px;
+        margin-top: 10%;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.5);
+    }
+
+        .score-submit:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.7);
+        }
+
+        .score-submit:active {
+            background-color: #1c598a;
+            transform: translateY(1px);
+            box-shadow: 0 5px 10px rgba(52, 152, 219, 0.5);
+        }
 </style>
 
 <script>
@@ -195,7 +276,7 @@
                 $('.koi-details-content').find('p:contains("Registration Date:")').html(`<strong>Registration Date:</strong> ${new Date(data.registrationDate).toLocaleDateString()}`);
                 $('.koi-details-content').find('p:contains("Approval Date:")').html(`<strong>Approval Date:</strong> ${new Date(data.approvalDate).toLocaleDateString()}`);
                 $('.koi-details-content').find('p:contains("Confirmation Code:")').html(`<strong>Confirmation Code:</strong> ${data.confirmationCode || 'N/A'}`);
-
+                
                 const score = data.score || 85;
                 $('.koi-details-content').find('p:contains("Score:")').html(`<strong>Score:</strong> ${score} / 100`);
 

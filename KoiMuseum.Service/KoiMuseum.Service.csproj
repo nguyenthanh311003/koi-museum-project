@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\KoiMuseum.Common\KoiMuseum.Common.csproj" />
     <ProjectReference Include="..\KoiMuseum.Data\KoiMuseum.Data.csproj" />
   </ItemGroup>
