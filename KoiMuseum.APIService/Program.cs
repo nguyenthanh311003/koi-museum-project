@@ -19,7 +19,7 @@ builder.Services.AddDbContext<Fa24Se172594Prn231G1KfsContext>(options => options
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://localhost:7232")
+        builder => builder.WithOrigins("https://localhost:7212")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
