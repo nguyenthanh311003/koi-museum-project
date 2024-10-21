@@ -3,7 +3,7 @@ using KoiMuseum.Data.Models;
 
 namespace KoiMuseum.Data.Repositories
 {
-    public class JudgeRepository : GenericRepository<Rank>
+    public class JudgeRepository : GenericRepository<Judge>
     {
         public JudgeRepository() { }
 
