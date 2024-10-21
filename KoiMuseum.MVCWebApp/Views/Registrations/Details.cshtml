@@ -88,6 +88,7 @@
     $(document).ready(function () {
         const id = @Model; // Correctly gets the passed registration Id
         loadRegistrationDetails(id);
+        checkUserRole(); // Check user role on page load
     });
 
     function loadRegistrationDetails(id) {
@@ -111,6 +112,33 @@
             },
             error: function (xhr) {
                 alert("Error: " + xhr.responseText);
+            }
+        });
+    }
+
+    function checkUserRole() {
+        $.ajax({
+            url: `https://localhost:7028/api/v1/get-logged-user`, // API endpoint to get logged-in user
+            type: 'GET',
+            xhrFields: {
+                withCredentials: true // This enables sending cookies with cross-origin requests
+            },
+            success: function (response) {
+                console.log(response);
+                if (response.status === 1) {
+                    const role = response.data.role; // Get user role
+
+                    if (role === "Judge") {
+                        // Hide Approve and Reject links for Judge
+                        $('a:contains("Approve"), a:contains("Reject")').hide();
+                    } else if (role === "Admin") {
+                        // Hide CheckIn link for Admin
+                        $('a:contains("CheckIn")').hide();
+                    }
+                }
+            },
+            error: function (xhr) {
+                alert("Error: " + xhr.responseText); // Show error message
             }
         });
     }
@@ -178,7 +206,5 @@
             alert("Please enter a confirmation code."); // Prompt user to enter a confirmation code
         }
     });
-
-
-
 </script>
+

@@ -30,9 +30,11 @@ PayOS payOS = new PayOS(
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://localhost:7212")
+        builder => builder.WithOrigins("https://localhost:7232", "https://localhost:7028")
                           .AllowAnyHeader()
-                          .AllowAnyMethod());
+                          .AllowAnyMethod()
+                          .AllowCredentials()
+                          );
 });
 
 // Register PayOS as a singleton service

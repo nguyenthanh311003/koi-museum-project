@@ -88,6 +88,7 @@
                 data: { page: currentPage, limit: limit, searchString: searchString },
                 success: function (data) {
                     $('#registrationTableBody').empty(); // Clear previous results
+                    console.log(data.data.items);
                     if (data && data.data && data.data.items.length > 0){
                         data.data.items.forEach(function (item) {
                             $('#registrationTableBody').append(`
