@@ -9,6 +9,7 @@ using KoiMuseum.Data.Models;
 using KoiMuseum.Common;
 using Newtonsoft.Json;
 using KoiMuseum.Service.Base;
+using System.Text;
 
 namespace KoiMuseum.MVCWebApp.Controllers
 {
@@ -41,29 +42,29 @@ namespace KoiMuseum.MVCWebApp.Controllers
             return View(new List<User>());
         }
 
-            // GET: Users
-            /*[HttpGet]
-            public async Task<JsonResult> GetUserss()
+        // GET: Users
+        /*[HttpGet]
+        public async Task<JsonResult> GetUserss()
+        {
+            using (var httpClient = new HttpClient())
             {
-                using (var httpClient = new HttpClient())
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Users");
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await httpClient.GetAsync(Const.APIEndPoint + "Users");
-                    if (response.IsSuccessStatusCode)
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<ServiceResult>(content);
-                        if (result != null && result.Data != null)
-                        {
-                            var data = JsonConvert.DeserializeObject<List<User>>(result.Data.ToString());
-                            return Json(data);
-                        }
+                        var data = JsonConvert.DeserializeObject<List<User>>(result.Data.ToString());
+                        return Json(data);
                     }
                 }
+            }
 
-                return Json(new List<User>());
-            }*/
+            return Json(new List<User>());
+        }*/
 
-            public async Task<IActionResult> Thanh()
+        public async Task<IActionResult> Thanh()
         {
             using (var httpClient = new HttpClient())
             {
@@ -215,5 +216,80 @@ namespace KoiMuseum.MVCWebApp.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> Login()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var user = new User();  // Assuming you want to return a new or existing user object
+                return View(user);
+            }
+        }
+
+        public async Task<IActionResult> Register()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var user = new User();  // Assuming you want to return a new or existing user object
+                return View(user);
+            }
+        }
+
+        /*[HttpPost]
+        public async Task<IActionResult> LoginSubmit([FromBody] User loginModel)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var apiUrl = Const.APIEndPoint + "v1/login";  // Your API endpoint
+
+                    var content = new StringContent(JsonConvert.SerializeObject(new
+                    {
+                        Email = loginModel.Email,
+                        Password = loginModel.Password
+                    }), Encoding.UTF8, "application/json");
+
+                    using (var response = await httpClient.PostAsync(apiUrl, content))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var apiResponse = await response.Content.ReadAsStringAsync();
+
+                            // Look for "success" keyword in the raw response
+                            if (apiResponse.Contains("\"message\":\"success\""))
+                            {
+                                return Json(new { success = true, message = "Login successful", redirectUrl = Url.Action("Index", "Home") });
+                            }
+                            else
+                            {
+                                return Json(new { success = false, message = "Login failed." });
+                            }
+                        }
+                        else
+                        {
+                            return Json(new { success = false, message = "Login failed. Please try again." });
+                        }
+                    }
+                }
+            }
+
+            return Json(new { success = false, message = "Invalid login credentials." });
+        }
+    }*/
+        [HttpPost]
+        public IActionResult LoginSubmit([FromBody] User loginModel)
+        {
+            // Example logic for validating the login
+            if (loginModel.Email == "test@example.com" && loginModel.Password == "password123")
+            {
+                return Json(new { success = true, message = "Login successful", redirectUrl = Url.Action("Index", "Home") });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Invalid login credentials." });
+            }
+        }
+
     }
 }

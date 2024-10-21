@@ -1,0 +1,77 @@
+﻿@model KoiMuseum.Data.Models.User
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login Page</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="loginForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" id="email" type="email" required />
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" type="password" id="password" required />
+            </div>
+            <div class="form-group">
+                <button id="btnLogin" type="button" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Register">Do not have an account? Register now!</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#btnLogin').click(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            var email = $('#email').val();
+            var password = $('#password').val();
+
+            // Ensure that email and password are not empty
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+
+            // AJAX POST request to login
+            $.ajax({
+                url: 'https://localhost:7028/api/v1/login', // Directly calling the API endpoint
+                type: 'POST',
+                data: JSON.stringify({
+                    Email: email,
+                    Password: password
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true // Enable cookies (session cookies included)
+                },
+                success: function (response) {
+                    if (response.message == "success") {
+                        alert('Login successful');
+                        // Redirect to another page if needed
+                        // window.location.href = "/";
+                    } else {
+                        alert('Login failed: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
