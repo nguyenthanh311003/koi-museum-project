@@ -15,7 +15,7 @@ namespace KoiMuseum.Service
         Task<IServiceResult> SearchSortCombineDataRegistrationAndRegisterDetail(SearchRegistrationFilter searchRegistrationFilter);
         Task<IServiceResult> GetById(int id);
         Task<IServiceResult> GetByIdWithCombineRegisterDetailResponse(int id);
-        Task<IServiceResult> CountContestantsParticipating(string rankId); 
+        Task<IServiceResult> CountContestantsParticipating(string rankId);
 
         /// <summary>
         /// Retrieves a registration by its ID, including related entities such as `RegisterDetail.Owner` and `Contest`.
@@ -28,7 +28,7 @@ namespace KoiMuseum.Service
         Task<IServiceResult> GetByIdV2(int id);
 
         Task<IServiceResult> Save(Registration registration);
-        Task<IServiceResult> ChangeStatus(int id, string status, string confirmCode);
+        Task<IServiceResult> ChangeStatus(int id, string status, string? confirmCode, string? reasonReject);
         Task<IServiceResult> DeleteById(int id);
     }
 
@@ -202,7 +202,8 @@ namespace KoiMuseum.Service
                 };
 
                 return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
             }
@@ -226,37 +227,56 @@ namespace KoiMuseum.Service
             }
         }
 
-        public async Task<IServiceResult> ChangeStatus(int id, string status, string confirmCode)
+        public async Task<IServiceResult> ChangeStatus(int id, string status, string? confirmCode, string? reasonReject)
         {
+            // Retrieve the registration record
             var registration = await _unitOfWork.RegistrationRepository.GetByIdAsync(id);
             if (registration == null)
             {
                 return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
             }
 
+            // Validate if the status provided is one of the allowed statuses
             var validStatuses = new List<string> { "CANCEL", "APPROVE", "REJECT", "CHECKIN" };
             if (!validStatuses.Contains(status))
             {
                 return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, "Invalid status.");
             }
+
+            // Check for CHECKIN status and confirm the code
             if (status.Equals("CHECKIN"))
             {
                 if (!registration.ConfirmationCode.Equals(confirmCode))
                 {
-                    return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Confirm Code did not match");
+                    return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Confirm Code did not match.");
                 }
             }
+
+            // Check for REJECT status and update the reason for rejection
+            if (status.Equals("REJECT"))
+            {
+                if (string.IsNullOrEmpty(reasonReject))
+                {
+                    return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, "Reason for rejection cannot be empty.");
+                }
+
+                registration.RejectedReason = reasonReject;  // Set the rejection reason
+            }
+
+            // Check if the status is already the same
             if (registration.Status == status)
             {
                 return new ServiceResult(Const.WARNING_STATUS_CHANGE_CODE, $"Registration is already in {status} status.");
             }
 
+            // Update the status and last updated date
             registration.Status = status;
             registration.UpdatedDate = DateTime.Now;
             await _unitOfWork.RegistrationRepository.UpdateAsync(registration);
 
             return new ServiceResult(Const.SUCCESS_UPDATE_CODE, $"Status changed to {status} successfully.", registration);
         }
+
 
         public async Task<IServiceResult> DeleteById(int id)
         {

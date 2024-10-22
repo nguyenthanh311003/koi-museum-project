@@ -16,7 +16,7 @@ builder.Services.AddScoped<IRegisterDetailService, RegisterDetailService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<IRankService, RankService>();
 builder.Services.AddScoped<IJudgeService, JudgeService>();
-//builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<JwtService, JwtService>();
 builder.Services.AddDbContext<Fa24Se172594Prn231G1KfsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Koi_museumDB")));
 

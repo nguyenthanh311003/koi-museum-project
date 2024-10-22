@@ -52,5 +52,8 @@
         public static string WARNING_STATUS_CHANGE_MSG = "Status change warning";  // Optional message
 
         #endregion
+
+        public static string PAID_STATUS = "PAID";
+        public static string PENDING_STATUS = "PENDING";
     }
 }

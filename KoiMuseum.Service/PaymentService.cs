@@ -8,9 +8,13 @@ namespace KoiMuseum.Service
     public interface IPaymentService
     {
         Task<IServiceResult> GetAll();
+        Task<IServiceResult> GetByTransactionId(string id);
         Task<IServiceResult> GetById(int id);
         Task<IServiceResult> Save(Payment payment);
         Task<IServiceResult> DeleteById(int id);
+        Task<IServiceResult> handlePaymentStatus(int paymentId);
+        Task<IServiceResult> UpdatePaymentStatus(int id, string newStatus);
+
     }
 
     public class PaymentService : IPaymentService
@@ -113,5 +117,65 @@ namespace KoiMuseum.Service
                 return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
             }
         }
+
+        public Task<IServiceResult> handlePaymentStatus(int paymentId)
+        {
+            return null;
+        }
+
+        public async Task<IServiceResult> GetByTransactionId(string id)
+        {
+            try
+            {
+                var payment = await _unitOfWork.PaymentRepository.GetByTransactionIdAsync(id);
+
+                if (payment == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+                }
+                else
+                {
+                    return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, payment);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+        }
+        public async Task<IServiceResult> UpdatePaymentStatus(int id, string newStatus)
+        {
+            try
+            {
+                // Fetch the payment by id
+                var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(id);
+
+                // Check if the payment exists
+                if (payment == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, "Payment not found", null);
+                }
+
+                // Update the payment status
+                payment.PaymentStatus = newStatus;
+                // Save the updated payment back to the database
+                int result = await _unitOfWork.PaymentRepository.UpdateAsync(payment);
+
+                if (result > 0)
+                {
+                    return new ServiceResult(Const.SUCCESS_UPDATE_CODE, "Payment status updated successfully", payment);
+                }
+                else
+                {
+                    return new ServiceResult(Const.FAIL_UPDATE_CODE, "Failed to update payment status", payment);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+        }
+
+
     }
 }

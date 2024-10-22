@@ -25,8 +25,35 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button id="cancel" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="submitConfirmCode">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal for Rejection Reason -->
+<div class="modal fade" id="rejectReasonModal" tabindex="-1" role="dialog" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectReasonModalLabel">Enter Rejection Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectReasonForm">
+                    <div class="form-group">
+                        <label for="rejectionReason">Rejection Reason</label>
+                        <textarea class="form-control" id="rejectionReason" required></textarea>
+                    </div>
+                    <input type="hidden" id="rejectId">
+                    <input type="hidden" id="rejectStatus" value="REJECT">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelReject" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitRejectReason">Submit</button>
             </div>
         </div>
     </div>
@@ -58,12 +85,6 @@
 
         <dt class="col-sm-2">Admin Reviewed By</dt>
         <dd class="col-sm-10" id="adminReviewedBy"></dd>
-
-        <dt class="col-sm-2">Updated Date</dt>
-        <dd class="col-sm-10" id="updatedDate"></dd>
-
-        <dt class="col-sm-2">Updated By</dt>
-        <dd class="col-sm-10" id="updatedBy"></dd>
 
         <dt class="col-sm-2">Contest Name</dt>
         <dd class="col-sm-10" id="contestName"></dd>
@@ -128,7 +149,7 @@
                 if (response.status === 1) {
                     const role = response.data.role; // Get user role
 
-                    if (role === "Judge") {
+                    if (role === "Admin") {
                         // Hide Approve and Reject links for Judge
                         $('a:contains("Approve"), a:contains("Reject")').hide();
                     } else if (role === "Admin") {
@@ -148,6 +169,10 @@
             // Show the modal for entering the confirmation code
             $('#checkinId').val(id); // Set the registration ID in the hidden field
             $('#confirmCodeModal').modal('show');
+        } else if (status === 'REJECT') {
+            // Show the modal for entering the rejection reason
+            $('#rejectId').val(id); // Set the registration ID in the hidden field
+            $('#rejectReasonModal').modal('show');
         } else {
             // Confirm for other statuses
             if (confirm(`Are you sure you want to ${status.toLowerCase()} this registration?`)) {
@@ -155,6 +180,7 @@
             }
         }
     }
+
 
     // Function to call the ChangeStatus API
     function callChangeStatusApi(id, status) {
@@ -172,6 +198,15 @@
             }
         });
     }
+    // handle cancel
+    $('#cancel').on('click', function () {
+        $('#confirmCodeModal').modal('hide'); // Hide the modal
+    });
+    // Handle cancel for the reject reason modal
+    $('#cancelReject').on('click', function () {
+        $('#rejectReasonModal').modal('hide'); // Hide the modal
+    });
+
 
     // Handle the submission of the confirmation code
     $('#submitConfirmCode').on('click', function () {
@@ -206,5 +241,39 @@
             alert("Please enter a confirmation code."); // Prompt user to enter a confirmation code
         }
     });
+    // Handle the submission of the rejection reason
+    $('#submitRejectReason').on('click', function () {
+        const id = $('#rejectId').val();
+        const status = $('#rejectStatus').val();
+        const reasonReject = $('#rejectionReason').val();
+
+        // Validate the rejection reason input
+        if (reasonReject) {
+            // Create the request body
+            const requestBody = {
+                Status: status,
+                ReasonReject: reasonReject
+            };
+
+            // Call the ChangeStatus API with the status and rejection reason as part of the request body
+            $.ajax({
+                url: `https://localhost:7028/api/Registrations/ChangeStatus/${id}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(requestBody), // Send the request body
+                success: function (response) {
+                    alert(response.message); // Display success message
+                    $('#rejectReasonModal').modal('hide'); // Hide the modal
+                    window.location.reload(); // Reload the page to see changes
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText); // Show error message
+                }
+            });
+        } else {
+            alert("Please enter a rejection reason."); // Prompt user to enter a rejection reason
+        }
+    });
+
 </script>
 

@@ -41,7 +41,7 @@ namespace KoiMuseum.APIService.Controllers
         [HttpGet("{id}")]
         public async Task<IServiceResult> GetRegistration(int id)
         {
-            var registration = await _registrationService.GetByIdV2(id);
+            var registration = await _registrationService.GetByIdWithCombineRegisterDetailResponse(id);
             return registration;
         }
 
@@ -79,7 +79,7 @@ namespace KoiMuseum.APIService.Controllers
         public async Task<IServiceResult> ChangeStatus(int id, [FromBody] ChangeStatusRequest request)
         {
             // Call the service to change the status
-            return await _registrationService.ChangeStatus(id, request.Status, request.ConfirmationCode);
+            return await _registrationService.ChangeStatus(id, request.Status, request.ConfirmationCode, request.ReasonReject);
         }
 
     }

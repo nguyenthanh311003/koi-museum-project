@@ -2,7 +2,8 @@
 {
     public class ChangeStatusRequest
     {
-        public string Status { get; set; }
-        public string ConfirmationCode { get; set; }
+        public string? Status { get; set; }
+        public string? ConfirmationCode { get; set; }
+        public string? ReasonReject { get; set; }
     }
 }
