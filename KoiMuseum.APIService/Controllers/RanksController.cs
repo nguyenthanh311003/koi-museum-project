@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service;
 using KoiMuseum.Service.Base;
+using KoiMuseum.Data.Filters;
+using KoiMuseum.Data.Dtos.Requests.Ranks;
+using KoiMuseum.Common;
 
 namespace KoiMuseum.APIService.Controllers
 {
@@ -16,17 +19,26 @@ namespace KoiMuseum.APIService.Controllers
     public class RanksController : ControllerBase
     {
         private readonly IRankService _rankService;
+        private readonly IContestRankService _contestRankService;
 
-        public RanksController(IRankService rankService)
+        public RanksController(IRankService rankService, IContestRankService contestRankService)
         {
             _rankService = rankService;
+            _contestRankService = contestRankService;
         }
 
-        // GET: api/Ranks
+
+        /*// GET: api/Ranks
         [HttpGet]
-        public async Task<IServiceResult> GetRanks()
+        public async Task<IServiceResult> GetRanks([FromQuery] SearchRankFilter searchRankFilter)
         {
-            return await _rankService.GetAll();
+            return await _rankService.GetAll(searchRankFilter);
+        }*/
+
+        [HttpGet]
+        public async Task<IServiceResult> GetRanks([FromQuery] SearchRankFilter searchRankFilter)
+        {
+            return await _contestRankService.GetAll(searchRankFilter);
         }
 
         // GET: api/Ranks/5
@@ -36,67 +48,22 @@ namespace KoiMuseum.APIService.Controllers
             return await _rankService.GetById(id);
         }
 
-        // PUT: api/Ranks/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        /*[HttpPut("{id}")]
-        public async Task<IActionResult> PutRank(int id, Rank rank)
-        {
-            if (id != rank.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(rank).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RankExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Ranks
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Rank>> PostRank(Rank rank)
+        public async Task<IServiceResult> Create([FromBody] CreateRankRequest createRankRequest)
         {
-            _context.Ranks.Add(rank);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRank", new { id = rank.Id }, rank);
+            return await _rankService.Create(createRankRequest);
         }
 
-        // DELETE: api/Ranks/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRank(int id)
+        [HttpDelete("{rankId}")]
+        public async Task<IServiceResult> Delete(int rankId)
         {
-            var rank = await _context.Ranks.FindAsync(id);
-            if (rank == null)
-            {
-                return NotFound();
-            }
-
-            _context.Ranks.Remove(rank);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return await _rankService.Delete(rankId);
         }
 
-        private bool RankExists(int id)
+        [HttpPut("{rankId}")]
+        public async Task<IServiceResult> Update(int rankId, [FromBody] UpdateRankRequest updateRankRequest)
         {
-            return _context.Ranks.Any(e => e.Id == id);
-        }*/
+            return await _rankService.Update(rankId, updateRankRequest);
+        }
     }
 }

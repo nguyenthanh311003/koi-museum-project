@@ -307,7 +307,7 @@ namespace KoiMuseum.Service
             {
                 // Lấy các giá trị phân trang từ searchRegistrationFilter
                 int pageNumber = searchRegistrationFilter.PageNumber;
-                int pageSize = searchRegistrationFilter.PageSize;
+                int pageSize = 1;
 
                 // Gọi phương thức repository để tìm kiếm và phân trang
                 var pagedResult = await _unitOfWork.RegistrationRepository.SearchRegistrationsPagedAsync(searchRegistrationFilter, pageNumber, pageSize);

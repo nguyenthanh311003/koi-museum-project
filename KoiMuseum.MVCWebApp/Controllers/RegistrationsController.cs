@@ -28,7 +28,7 @@ namespace KoiMuseum.MVCWebApp.Controllers
             return View();
         }
 
-        public async Task<IActionResult> RegistrationsOfRank(string name, string contestName, string ownerName = "", int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> RegistrationsOfRank(string name, string contestName, string ownerName = "", int pageNumber = 1, int pageSize = 1)
         {
             using (var httpClient = new HttpClient())
             {
