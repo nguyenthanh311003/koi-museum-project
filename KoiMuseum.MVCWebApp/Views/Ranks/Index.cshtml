@@ -1,4 +1,4 @@
-﻿@model IEnumerable<KoiMuseum.Data.Dtos.Responses.Ranks.RanksResponse>
+﻿@model KoiMuseum.Data.PagingModel.PagedResult<KoiMuseum.Data.Dtos.Responses.Ranks.RanksResponse>
 
 @{
     ViewData["Title"] = "Index";
@@ -81,6 +81,51 @@ h1 {
     text-align: center;
 }
 
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .pagination {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .page-item {
+            font-size: 1.2em;
+        }
+
+        .page-link {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #555;
+            background-color: #fff;
+            border-radius: 50px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+            .page-link:hover {
+                background-color: #ffa500;
+                color: #fff;
+            }
+
+        .page-item.active .page-link {
+            background-color: #ffa500;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #e0e0e0;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
 /* Adjust responsiveness */
     </style>
 
@@ -89,6 +134,34 @@ h1 {
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Competitions Class</h1>
+        <!-- Search and Filter Section -->
+        <form method="GET" action="/Ranks">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                    <input type="text" id="searchInput" name="rankName" class="form-control" placeholder="Search by name...">
+            </div>
+            <div class="col-md-2">
+                    <select id="rewardSort" class="form-control" name="reward">
+                    <option value="default">Sort by reward</option>
+                    <option value="desc">High to Low</option>
+                        <option value="asc">Low to High</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                    <select id="statusFilter" class="form-control" name="status">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button id="searchButton" class="btn btn-primary" type="submit">Search</button>
+            </div>
+                <div class="col-md-2">
+                    <a href="/Ranks/Create" class="btn btn-success ml-2">Create</a>
+                </div>
+        </div>
+        </form>
         <div class="table-responsive">
             <table class="table table-borderless custom-table">
                 <thead>
@@ -102,10 +175,13 @@ h1 {
                         <th>Participants</th>
                         <th>Reward</th>
                         <th>Status</th>
+                        <th>Action</th> <!-- Thêm cột Action -->
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var rank in Model)
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                    @foreach (var rank in Model.Items)
                     {
                         <tr onclick="location.href='@Url.Action("RegistrationsOfRank", "Registrations", new { name = rank.Name, contestName = rank.ContestName })'">
                             <td data-label="Class">
@@ -121,13 +197,58 @@ h1 {
                             <td data-label="Participants">@rank.Participants</td>
                             <td data-label="Reward">$ @rank.Reward</td>
                             <td data-label="Status">@rank.Status</td>
+                                <td data-label="Action">
+                                    <a href="@Url.Action("Details", "Ranks", new { id = rank.Id })" class="btn btn-info btn-sm">Detail</a>
+                                    <a href="@Url.Action("Edit", "Ranks", new { id = rank.Id })" class="btn btn-warning btn-sm">Edit</a> <!-- Nút Edit -->
+                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(@rank.Id)">Delete</button>
+                                </td>
                         </tr>
+                        }
+                    }
+                    else
+                    {
+                        <p>No registrations found for this rank.</p>
                     }
                 </tbody>
             </table>
         </div>
     </div>
+    <div class="pagination-container">
+        <ul class="pagination">
+            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                <a href="?pageNumber=@(Model.PageNumber - 1)&name=@ViewBag.RankName&contestName=@ViewBag.ContestName" class="page-link">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                    <a href="?pageNumber=@i&name=@ViewBag.RankName&contestName=@ViewBag.ContestName" class="page-link">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                <a href="?pageNumber=@(Model.PageNumber + 1)&name=@ViewBag.RankName&contestName=@ViewBag.ContestName" class="page-link">Next</a>
+            </li>
+        </ul>
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    function confirmDelete(rankId) {
+        if (confirm("Are you sure you want to delete this rank?")) {
+            $.ajax({
+                url: 'https://localhost:7028/api/Ranks/' + rankId,
+                type: 'DELETE',
+                success: function (result) {
+                    alert("Rank deleted successfully.");
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert("Error deleting rank: " + xhr.responseText);
+                }
+            });
+        }
+    }
+</script>

@@ -1,7 +1,11 @@
 ﻿using KoiMuseum.Common;
 using KoiMuseum.Data;
+using KoiMuseum.Data.Dtos.Requests.Ranks;
 using KoiMuseum.Data.Dtos.Responses.Ranks;
+using KoiMuseum.Data.Dtos.Responses.Registration;
+using KoiMuseum.Data.Filters;
 using KoiMuseum.Data.Models;
+using KoiMuseum.Data.PagingModel;
 using KoiMuseum.Service.Base;
 using System;
 using System.Collections.Generic;
@@ -13,9 +17,12 @@ namespace KoiMuseum.Service
 {
     public interface IRankService
     {
-        Task<IServiceResult> GetAll();
+        Task<IServiceResult> GetAll(SearchRankFilter searchRankFilter);
+        Task<IServiceResult> Create(CreateRankRequest createRankRequest);
         Task<IServiceResult> GetById(int id);
         Task<IServiceResult> ClassificationRank(int registerDetailId);
+        public Task<IServiceResult> Delete(int rankId);
+        public Task<IServiceResult> Update(int rankId, UpdateRankRequest updateRankRequest);
     }
 
     public class RankService : IRankService
@@ -113,11 +120,59 @@ namespace KoiMuseum.Service
             }
         }
 
-        public async Task<IServiceResult> GetAll()
+        public async Task<IServiceResult> Create(CreateRankRequest createRankRequest)
         {
-            var ranks = await _unitOfWork.RankRepository.GetAllAsync();
+            try
+            {
+                int result = -1;
+                int createContestRankResult = -1;
+                if (createRankRequest != null)
+                {
+                    var newRank = new Rank();
+                    newRank.Name = createRankRequest.Name;
+                    newRank.Description = createRankRequest.Description;
+                    newRank.MinSize = createRankRequest.MinSize;
+                    newRank.MaxSize = createRankRequest.MaxSize;
+                    newRank.Criteria = createRankRequest.Criteria;
+                    newRank.Reward = createRankRequest.Reward;
+                    newRank.MinAge = createRankRequest.MinAge;
+                    newRank.MaxAge = createRankRequest.MaxAge;
+                    newRank.VarietyRestriction = createRankRequest.VarietyRestriction;
+                    newRank.CreatedDate = DateTime.Now;
+                    result = await _unitOfWork.RankRepository.CreateAsync(newRank);
+                    var contest = await _unitOfWork.ContestRepository.GetContestByStatus("ACTIVE");
+                    var contestRank = new ContestRank();
+                    contestRank.RankId = newRank.Id;
+                    contestRank.ContestId = contest.Id;
+                    contestRank.Status = "Active";
+                    createContestRankResult = await _unitOfWork.ContestRankRepository.CreateAsync(contestRank);
+                    if (result > 0 && createContestRankResult > 0)
+                    {
+                        return new ServiceResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, newRank);
+                    }
+                    else
+                    {
+                        return new ServiceResult(Const.FAIL_CREATE_CODE, Const.FAIL_CREATE_MSG);
+                    }
+                }
+            } catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
 
-            if (ranks == null)
+            return new ServiceResult(Const.FAIL_CREATE_CODE, "Invalid request");
+        }
+
+        public async Task<IServiceResult> GetAll(SearchRankFilter searchRankFilter)
+        {
+            int pageNumber = searchRankFilter.PageNumber;
+            int pageSize = 1;
+
+            /*var ranks = await _unitOfWork.RankRepository.GetAllAsync();*/
+
+            var pagedResult = await _unitOfWork.RankRepository.SearchRanksPagedAsync(searchRankFilter, pageNumber, pageSize);
+
+            if (pagedResult == null || !pagedResult.Items.Any())
             {
                 return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
             }
@@ -131,7 +186,7 @@ namespace KoiMuseum.Service
                 return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
             }
 
-            foreach (var rank in ranks)
+            foreach (var rank in pagedResult.Items)
             {
                 var countRegisterDetailByRankId = await _unitOfWork.RegisterDetailRepository.CountRegisterDetailByRankId(rank.Id);
 
@@ -140,7 +195,8 @@ namespace KoiMuseum.Service
                 if (getContestRank == null)
                 {
                     continue;
-                } else
+                }
+                else
                 {
                     var rankResponse = new RanksResponse
                     {
@@ -159,10 +215,18 @@ namespace KoiMuseum.Service
                         VarietyRestriction = rank.VarietyRestriction,
                     };
                     ranksResponses.Add(rankResponse);
-                } 
+                }
             }
 
-            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, ranksResponses);
+            var pagedResponse = new PagedResult<RanksResponse>
+            {
+                Items = ranksResponses,
+                TotalItems = pagedResult.TotalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, pagedResponse);
         }
 
         public async Task<IServiceResult> GetById(int id)
@@ -176,6 +240,79 @@ namespace KoiMuseum.Service
             else
             {
                 return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, rankById);
+            }
+        }
+
+        public async Task<IServiceResult> Delete(int rankId)
+        {
+            try
+            {
+                // Lấy thông tin rank theo ID
+                var rankById = await _unitOfWork.RankRepository.GetByIdAsync(rankId);
+
+                // Kiểm tra xem rank có tồn tại không
+                if (rankById == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, null);
+                }
+
+                // Lấy danh sách ContestRank liên quan
+                List<ContestRank> contestRanks = await _unitOfWork.ContestRankRepository.GetContestRankByRankId(rankId);
+
+                // Xóa ContestRank liên quan
+                if (contestRanks.Any())
+                {
+                    foreach (var contestRank in contestRanks)
+                    {
+                        await _unitOfWork.ContestRankRepository.DeleteRankWithDeleteContestRank(rankId); // Sửa lại để sử dụng contestRank.Id
+                    }
+                }
+
+                bool isDelete = await _unitOfWork.RankRepository.RemoveAsync(rankById);
+                if (!isDelete)
+                {
+                    return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, rankById);
+                }
+
+                return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, rankById);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+        public async Task<IServiceResult> Update(int rankId, UpdateRankRequest updateRankRequest)
+        {
+            int result = -1;
+
+            var rankById = await _unitOfWork.RankRepository.GetByIdAsync(rankId);
+
+            if (rankById == null && updateRankRequest == null)
+            {
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new Rank());               
+            }
+
+            rankById.Name = updateRankRequest.Name;
+            rankById.Description = updateRankRequest.Description;
+            rankById.MinSize = updateRankRequest.MinSize;
+            rankById.MaxSize = updateRankRequest.MaxSize;
+            rankById.Criteria = updateRankRequest.Criteria;
+            rankById.Reward = updateRankRequest.Reward;
+            rankById.MinAge = updateRankRequest.MinAge;
+            rankById.MaxAge = updateRankRequest.MaxAge;
+            rankById.VarietyRestriction = updateRankRequest.VarietyRestriction;
+            rankById.CreatedDate = DateTime.Now;
+
+            result = await _unitOfWork.RankRepository.UpdateAsync(rankById);
+
+            if (result > 0)
+            {
+                return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, rankById);
+            }
+            else
+            {
+                return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, rankById);
             }
         }
     }

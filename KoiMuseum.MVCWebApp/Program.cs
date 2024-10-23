@@ -1,9 +1,12 @@
 using KoiMuseum.Data.Models;
+using KoiMuseum.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IRankService, RankService>();
+builder.Services.AddScoped<IContestRankService, ContestRankService>();
 builder.Services.AddScoped<Fa24Se172594Prn231G1KfsContext>();
 
 var app = builder.Build();

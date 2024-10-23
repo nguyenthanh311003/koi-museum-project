@@ -10,6 +10,9 @@ using KoiMuseum.Common;
 using KoiMuseum.Service.Base;
 using Newtonsoft.Json;
 using KoiMuseum.Data.Dtos.Responses.Ranks;
+using System.Drawing.Printing;
+using KoiMuseum.Data.PagingModel;
+using KoiMuseum.Data.Dtos.Responses.Registration;
 
 namespace KoiMuseum.MVCWebApp.Controllers
 {
@@ -23,42 +26,67 @@ namespace KoiMuseum.MVCWebApp.Controllers
         }
 
         // GET: Ranks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string rankName = "", string reward = "", string status = "ACTIVE", int pageNumber = 1, int pageSize = 10)
         {
             using (var httpClient = new HttpClient())
             {
-                var response = await httpClient.GetAsync(Const.APIEndPoint + "Ranks");
+                var queryString = $"?RankName={Uri.EscapeDataString(rankName)}&Status={Uri.EscapeDataString(status)}&SortReward={Uri.EscapeDataString(reward)}&pageNumber={pageNumber}&pageSize={pageSize}";
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Ranks" + queryString);
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<ServiceResult>(content);
                     if (result != null && result.Data != null)
                     {
-                        var data = JsonConvert.DeserializeObject<List<RanksResponse>>(result.Data.ToString());
-                        return View(data);
+                        var data = JsonConvert.DeserializeObject<RankPagedResult>(result.Data.ToString());
+                        if (data != null)
+                        {
+                            var totalItems = data.TotalItems;
+
+                            var pagedResult = new PagedResult<RanksResponse>
+                            {
+                                Items = data.Items,
+                                TotalItems = totalItems,
+                                PageNumber = pageNumber,
+                                PageSize = pageSize
+                            };
+
+                            ViewBag.PagedResult = pagedResult;
+                            return View(pagedResult);
+                        }
                     }
                 }
-            }
+                ViewBag.PagedResult = new PagedResult<RanksResponse>
+                {
+                    Items = new List<RanksResponse>(),
+                    TotalItems = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
 
-            return View(new List<RanksResponse>());
+                return View(new PagedResult<RanksResponse>());
+            }
         }
 
         // GET: Ranks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            using (var httpClient = new HttpClient())
             {
-                return NotFound();
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Ranks/" + id.ToString());
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var data = JsonConvert.DeserializeObject<Rank>(result.Data.ToString());
+                        return View(data);
+                    }
+                }
             }
 
-            var rank = await _context.Ranks
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (rank == null)
-            {
-                return NotFound();
-            }
-
-            return View(rank);
+            return View(new Rank());
         }
 
         // GET: Ranks/Create
