@@ -34,20 +34,18 @@
 <script>
     $(document).ready(function () {
         $('#btnLogin').click(function (e) {
-            e.preventDefault(); // Prevent the default form submission
+            e.preventDefault();
 
             var email = $('#email').val();
             var password = $('#password').val();
 
-            // Ensure that email and password are not empty
             if (!email || !password) {
                 alert('Please enter both email and password');
                 return;
             }
 
-            // AJAX POST request to login
             $.ajax({
-                url: 'https://localhost:7028/api/v1/login', // Directly calling the API endpoint
+                url: 'https://localhost:7028/api/v1/login', 
                 type: 'POST',
                 data: JSON.stringify({
                     Email: email,
@@ -56,13 +54,40 @@
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 xhrFields: {
-                    withCredentials: true // Enable cookies (session cookies included)
+                    withCredentials: true
                 },
                 success: function (response) {
                     if (response.message == "success") {
-                        alert('Login successful');
-                        // Redirect to another page if needed
-                        // window.location.href = "/";
+                        $.ajax({
+                            type: 'GET',
+                            url: 'https://localhost:7028/api/v1/get-logged-user',
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            success: function (userResponse) {
+                                if (userResponse && userResponse.data) {
+                                    var role = userResponse.data.role;
+
+                                    // Redirect based on role
+                                    if (role === "Admin") {
+                                        window.location.href = "/Users/AdminJudgeList";
+                                    } else if (role === "Judge") {
+                                        window.location.href = "/";
+                                    } else if (role === "User") {
+                                        window.location.href = "/";
+                                    } else {
+                                        alert("Unknown role, redirecting to home page.");
+                                        window.location.href = "/";
+                                    }
+                                } else {
+                                    alert("Failed to get user information.");
+                                }
+                            },
+                            error: function () {
+                                alert("Failed to get user information.");
+                            }
+                        });
+
                     } else {
                         alert('Login failed: ' + response.message);
                     }

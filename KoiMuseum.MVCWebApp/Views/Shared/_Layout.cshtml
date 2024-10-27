@@ -25,6 +25,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <!-- Admin menu item - initially hidden -->
+                        <li class="nav-item admin-only" style="display: none;">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Judge" asp-action="Index">Judge List</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item logged-out">
+                            <a class="nav-link text-dark" href="/Users/Login">Login</a>
+                        </li>
+                        <li class="nav-item logged-in" style="display: none;">
+                            <a class="nav-link text-dark" href="#" id="logoutButton">Logout</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -36,14 +48,74 @@
         </main>
     </div>
 
-    @* <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - KoiMuseum.MVCWebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Add this script for handling authentication state -->
+    <script>
+        $(document).ready(function () {
+            // Check authentication status when page loads
+            checkAuthStatus();
+
+            // Handle logout
+            $('#logoutButton').click(function (e) {
+                e.preventDefault();
+                logout();
+            });
+
+            function checkAuthStatus() {
+                $.ajax({
+                    url: 'https://localhost:7028/api/v1/get-logged-user',
+                    type: 'GET',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function (response) {
+                        if (response) {
+                            // User is logged in
+                            $('.logged-in').show();
+                            $('.logged-out').hide();
+
+                            // Check if user is admin
+                            if (response.data.role && response.data.role == ('Admin')) {
+                                $('.admin-only').show();
+                            }
+                        } else {
+                            // User is not logged in
+                            $('.logged-in').hide();
+                            $('.logged-out').show();
+                            $('.admin-only').hide();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error - assume user is not logged in
+                        $('.logged-in').hide();
+                        $('.logged-out').show();
+                        $('.admin-only').hide();
+                    }
+                });
+            }
+
+            function logout() {
+                $.ajax({
+                    url: 'https://localhost:7028/api/v1/logout',
+                    type: 'POST',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function (response) {
+                        // Redirect to home page after successful logout
+                        window.location.href = '/Users/Login';
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Logout failed: ' + error);
+                    }
+                });
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

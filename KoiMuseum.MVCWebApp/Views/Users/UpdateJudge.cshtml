@@ -1,0 +1,103 @@
+﻿@model KoiMuseum.Data.Models.Judge
+
+@{
+    ViewData["Title"] = "Update Judge";
+}
+
+<h1>Update Judge</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="updateJudgeForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- User Selection Dropdown -->
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label">Select User</label>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserList"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+
+            <!-- Experience -->
+            <div class="form-group">
+                <label asp-for="Experience" class="control-label">Experience</label>
+                <input asp-for="Experience" class="form-control" type="number" />
+                <span asp-validation-for="Experience" class="text-danger"></span>
+            </div>
+
+            <!-- Certifications -->
+            <div class="form-group">
+                <label asp-for="Certifications" class="control-label">Certifications</label>
+                <input asp-for="Certifications" class="form-control" />
+                <span asp-validation-for="Certifications" class="text-danger"></span>
+            </div>
+
+            <!-- Assigned Contests -->
+            <div class="form-group">
+                <label asp-for="AssignedContests" class="control-label">Select Assigned Contest</label>
+                <select asp-for="AssignedContests" class="form-control" asp-items="ViewBag.ContestList"></select>
+                <span asp-validation-for="AssignedContests" class="text-danger"></span>
+            </div>
+
+            <!-- Status (Hidden) -->
+            <input type="hidden" asp-for="Status" value="ACTIVE" />
+
+            <!-- JudgeId (Hidden) -->
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Update Button -->
+            <div class="form-group mt-3">
+                <button type="button" id="updateJudgeBtn" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="AdminJudgeList" class="btn btn-secondary">Back to Judge List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#updateJudgeBtn').click(function () {
+                // Collect form data
+                var formData = {
+                    Id: $('#Id').val(),
+                    UserId: $('#UserId').val(),
+                    Experience: $('#Experience').val(),
+                    Certifications: $('#Certifications').val(),
+                    AssignedContests: $('#AssignedContests').val(),
+                    Status: 'ACTIVE'
+                };
+
+                // AJAX request
+                $.ajax({
+                    url: 'https://localhost:7028/api/Users/JudgeUpdate',
+                    type: 'PUT',
+                    data: formData,
+                    success: function (response) {
+                        if (response.status == 1) {
+                            alert('Judge updated successfully!');
+                            window.location.href = '@Url.Action("AdminJudgeList", "Users")';
+                        } else {
+                            alert('Error!');
+
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+}
