@@ -18,6 +18,7 @@ namespace KoiMuseum.Service
     public interface IRankService
     {
         Task<IServiceResult> GetAll(SearchRankFilter searchRankFilter);
+        Task<IServiceResult> GetAllActive();
         Task<IServiceResult> Create(CreateRankRequest createRankRequest);
         Task<IServiceResult> GetById(int id);
         Task<IServiceResult> ClassificationRank(int registerDetailId);
@@ -288,7 +289,7 @@ namespace KoiMuseum.Service
 
             var rankById = await _unitOfWork.RankRepository.GetByIdAsync(rankId);
 
-            if (rankById == null && updateRankRequest == null)
+            if (rankById == null || updateRankRequest == null)
             {
                 return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new Rank());               
             }
@@ -314,6 +315,18 @@ namespace KoiMuseum.Service
             {
                 return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, rankById);
             }
+        }
+
+        public async Task<IServiceResult> GetAllActive()
+        {
+            var ranks = await _unitOfWork.RankRepository.GetAllAsync();
+
+            if (ranks.Count < 0)
+            {
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, ranks);
+            }
+
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, ranks);
         }
     }
 }

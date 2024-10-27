@@ -41,6 +41,12 @@ namespace KoiMuseum.APIService.Controllers
             return await _contestRankService.GetAll(searchRankFilter);
         }
 
+        [HttpGet("GetAllActive")]
+        public async Task<IServiceResult> GetAll()
+        {
+            return await _rankService.GetAllActive();
+        }
+
         // GET: api/Ranks/5
         [HttpGet("{id}")]
         public async Task<IServiceResult> GetRank(int id)

@@ -4,6 +4,133 @@
     ViewData["Title"] = "Edit";
 }
 
+<style>
+    /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        color: #495057;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        font-size: 2.2em;
+        color: #333;
+        text-align: center;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    h4 {
+        font-size: 1.3em;
+        color: #555;
+        text-align: center;
+        font-weight: normal;
+        margin-bottom: 20px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Form Container */
+    .details-form {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+        margin: 20px auto;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+    .form-control {
+        border-radius: 5px;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+    .text-danger {
+        font-size: 0.9em;
+        color: #e74c3c;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1em;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    /* Link */
+    .back-link {
+        display: block;
+        text-align: center;
+        font-size: 1em;
+        color: #007bff;
+        margin-top: 20px;
+        text-decoration: none;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+    /* Confirmation Message Styling */
+    .alert {
+        display: none;
+        font-size: 1em;
+        padding: 15px;
+        margin: 10px 0;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
+
 <h1>Edit</h1>
 
 <h4>RegisterDetail</h4>
@@ -15,7 +142,7 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="RankId" class="control-label"></label>
-                <select asp-for="RankId" class="form-control" asp-items="ViewBag.RankId"></select>
+                <select id="RankId" name="RankId" class="form-control"></select>
                 <span asp-validation-for="RankId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -34,24 +161,34 @@
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                <label asp-for="Type" class="control-label"></label>
+                <input asp-for="Type" class="form-control" />
+                <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                <label asp-for="Gender" class="control-label"></label>
+                <input asp-for="Gender" class="form-control" />
+                <span asp-validation-for="Gender" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UpdatedDate" class="control-label"></label>
-                <input asp-for="UpdatedDate" class="form-control" />
-                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UpdatedBy" class="control-label"></label>
-                <input asp-for="UpdatedBy" class="form-control" />
-                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Weight" class="control-label"></label>
+                <input asp-for="Weight" class="form-control" />
+                <span asp-validation-for="Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageUrl" class="control-label"></label>
+                <input asp-for="ImageUrl" class="form-control" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -65,5 +202,73 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Gọi API để lấy danh sách Rank
+            $.ajax({
+                url: 'https://localhost:7028/api/Ranks/GetAllActive',
+                method: 'GET',
+                success: function (response) {
+                    if (response.status === 1) {
+                        var $rankSelect = $('#RankId');
+                        $rankSelect.empty();
+                        $rankSelect.append($('<option>').text('Select Rank').attr('value', ''));
+                        $.each(response.data, function (index, rank) {
+                            var isSelected = rank.id === @Model.RankId ? 'selected' : '';
+                            $rankSelect.append($('<option>').text(rank.name).attr('value', rank.id).attr('selected', isSelected));
+                        });
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Error loading ranks');
+                }
+            });
+
+            // Xử lý sự kiện submit form
+            $('form').on('submit', function (event) {
+                event.preventDefault(); // Ngăn chặn hành động submit mặc định
+                var confirmation = confirm("Are you sure you want to update this record?");
+                if (confirmation) {
+                    var updateRegisterDetailRequest = {
+                        Id: $('#Id').val(),
+                        RankId: $('#RankId').val(),
+                        OwnerId: $('#OwnerId').val(),
+                        Size: $('#Size').val(),
+                        Age: $('#Age').val(),
+                        Type: $('#Type').val(),
+                        Gender: $('#Gender').val(),
+                        Status: $('#Status').val(),
+                        Name: $('#Name').val(),
+                        Weight: $('#Weight').val(),
+                        ImageUrl: $('#ImageUrl').val()
+                    };
+                    $.ajax({
+                        url: 'https://localhost:7028/api/RegisterDetails',
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(updateRegisterDetailRequest),
+                        success: function (response) {
+                            if (response.status === 1) {
+                                alert('Update successful!');
+                                window.location.href = '@Url.Action("RegisterDetailList")';
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert('Error updating register detail');
+                        }
+                    });
+                } else {
+                    alert('Update canceled.');
+                }
+            });
+        });
+    </script>
 }

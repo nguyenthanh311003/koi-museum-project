@@ -1,0 +1,265 @@
+﻿@model KoiMuseum.Data.Models.RegisterDetail
+
+@{
+    ViewData["Title"] = "CreateRegisterDetail";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        font-size: 2.5em;
+        color: #333;
+        text-align: center;
+        margin: 20px 0;
+        font-weight: bold;
+    }
+
+    h4 {
+        text-align: center;
+        font-size: 1.5em;
+        color: #555;
+        margin-bottom: 30px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .col-md-4 {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .control-label {
+        font-size: 1.1em;
+        color: #555;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+
+    .form-control {
+        font-size: 1em;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #28a745;
+            outline: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-primary {
+        background-color: #28a745;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        display: block;
+        width: 100%;
+    }
+
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.9em;
+        font-weight: 600;
+    }
+
+    a {
+        color: #555;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+        text-align: center;
+        width: 100%;
+        font-size: 1.1em;
+        color: #007bff;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+</style>
+
+
+<h1>CreateRegisterDetail</h1>
+
+<h4>RegisterDetail</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateRegisterDetail">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RankId" class="control-label"></label>
+                <select id="RankId" name="RankId" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="OwnerId" class="control-label"></label>
+                <input asp-for="OwnerId" class="form-control" />
+                <span asp-validation-for="OwnerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <input asp-for="Type" class="form-control" />
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <input asp-for="Gender" class="form-control" />
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageUrl" class="control-label"></label>
+                <input asp-for="ImageUrl" class="form-control" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Weight" class="control-label"></label>
+                <input asp-for="Weight" class="form-control" />
+                <span asp-validation-for="Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedBy" class="control-label"></label>
+                <input asp-for="CreatedBy" class="form-control" />
+                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedDate" class="control-label"></label>
+                <input asp-for="UpdatedDate" class="form-control" />
+                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedBy" class="control-label"></label>
+                <input asp-for="UpdatedBy" class="form-control" />
+                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Lấy danh sách rank
+            $.ajax({
+                url: 'https://localhost:7028/api/Ranks/GetAllActive',
+                method: 'GET',
+                success: function (response) {
+                    if (response.status === 1) { // Kiểm tra trạng thái thành công
+                        var $rankSelect = $('#RankId');
+                        $rankSelect.empty();
+                        $rankSelect.append($('<option>').text('Select Rank').attr('value', ''));
+                        $.each(response.data, function (index, rank) {
+                            $rankSelect.append($('<option>').text(rank.name).attr('value', rank.id));
+                        });
+                    } else {
+                        alert(response.message); // Hiển thị thông báo nếu không thành công
+                    }
+                },
+                error: function () {
+                    alert('Error loading ranks');
+                }
+            });
+
+            // Xử lý sự kiện submit của form
+            $('form').on('submit', function (e) {
+                e.preventDefault(); // Ngăn chặn hành động mặc định của form
+
+                // Lấy dữ liệu từ form
+                var createRegisterDetailRequest = {
+                    Size: $('#Size').val(),
+                    Age: $('#Age').val(),
+                    Type: $('#Type').val(),
+                    Gender: $('#Gender').val(),
+                    ImageUrl: $('#ImageUrl').val(),
+                    Name: $('#Name').val(),
+                    Weight: $('#Weight').val(),
+                    CreatedBy: $('#CreatedBy').val(),
+                    UpdatedBy: $('#UpdatedBy').val(),
+                    UpdatedDate: $('#UpdatedDate').val(),
+                    RankId: $('#RankId').val(), // Thêm RankId vào request
+                    OwnerId: $('#OwnerId').val()  // Thêm OwnerId vào request
+                };
+
+                // Gửi yêu cầu tạo
+                $.ajax({
+                    url: 'https://localhost:7028/api/RegisterDetails',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(createRegisterDetailRequest),
+                    success: function (response) {
+                        if (response.status === 1) {
+                            alert('RegisterDetail created successfully!');
+                            window.location.href = '@Url.Action("RegisterDetailList", "RegisterDetails")';
+                        } else {
+                            alert('Failed to create RegisterDetail: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Error creating RegisterDetail');
+                    }
+                });
+            });
+        });
+    </script>
+}

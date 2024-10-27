@@ -4,84 +4,116 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Create Rank</h3>
+                </div>
+                <div class="card-body">
+                    <form id="createRankForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>Rank</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form id="createRankForm">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Rank Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter rank name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Criteria" class="form-label fw-bold">Criteria</label>
+                            <input asp-for="Criteria" class="form-control" placeholder="Enter criteria" />
+                            <span asp-validation-for="Criteria" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Reward" class="form-label fw-bold">Reward</label>
+                            <input asp-for="Reward" class="form-control" placeholder="Enter reward" />
+                            <span asp-validation-for="Reward" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Description</label>
+                            <input asp-for="Description" class="form-control" placeholder="Short description" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MinSize" class="form-label fw-bold">Min Size (cm)</label>
+                                    <input asp-for="MinSize" class="form-control" placeholder="e.g., 10" />
+                                    <span asp-validation-for="MinSize" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MaxSize" class="form-label fw-bold">Max Size (cm)</label>
+                                    <input asp-for="MaxSize" class="form-control" placeholder="e.g., 50" />
+                                    <span asp-validation-for="MaxSize" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MinAge" class="form-label fw-bold">Min Age (months)</label>
+                                    <input asp-for="MinAge" class="form-control" placeholder="e.g., 6" />
+                                    <span asp-validation-for="MinAge" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MaxAge" class="form-label fw-bold">Max Age (months)</label>
+                                    <input asp-for="MaxAge" class="form-control" placeholder="e.g., 36" />
+                                    <span asp-validation-for="MaxAge" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="VarietyRestriction" class="form-label fw-bold">Variety Restriction</label>
+                            <input asp-for="VarietyRestriction" class="form-control" placeholder="e.g., Kohaku" />
+                            <span asp-validation-for="VarietyRestriction" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CreatedBy" class="form-label fw-bold">Created By</label>
+                                    <input asp-for="CreatedBy" class="form-control" />
+                                    <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="UpdatedBy" class="form-label fw-bold">Updated By</label>
+                                    <input asp-for="UpdatedBy" class="form-control" />
+                                    <span asp-validation-for="UpdatedBy" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Create Rank</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Criteria" class="control-label"></label>
-                <input asp-for="Criteria" class="form-control" />
-                <span asp-validation-for="Criteria" class="text-danger"></span>
+            <div class="text-center mt-3">
+                <a href="@Url.Action("Index", "Ranks")" class="btn btn-secondary">Back to List</a>
             </div>
-            <div class="form-group">
-                <label asp-for="Reward" class="control-label"></label>
-                <input asp-for="Reward" class="form-control" />
-                <span asp-validation-for="Reward" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinSize" class="control-label"></label>
-                <input asp-for="MinSize" class="form-control" />
-                <span asp-validation-for="MinSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaxSize" class="control-label"></label>
-                <input asp-for="MaxSize" class="form-control" />
-                <span asp-validation-for="MaxSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinAge" class="control-label"></label>
-                <input asp-for="MinAge" class="form-control" />
-                <span asp-validation-for="MinAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaxAge" class="control-label"></label>
-                <input asp-for="MaxAge" class="form-control" />
-                <span asp-validation-for="MaxAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VarietyRestriction" class="control-label"></label>
-                <input asp-for="VarietyRestriction" class="form-control" />
-                <span asp-validation-for="VarietyRestriction" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedBy" class="control-label"></label>
-                <input asp-for="UpdatedBy" class="form-control" />
-                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         const Const = {
@@ -107,7 +139,6 @@
                             window.location.href = '@Url.Action("Index", "Ranks")';
                         } else {
                             alert(response.message);
-                            
                         }
                     },
                     error: function (xhr, status, error) {
