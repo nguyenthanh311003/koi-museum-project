@@ -1,4 +1,5 @@
 ﻿using KoiMuseum.Data.Base;
+using KoiMuseum.Data.Dtos.Responses.RegisterDetails;
 using KoiMuseum.Data.Filters;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Data.PagingModel;
@@ -53,13 +54,13 @@ namespace KoiMuseum.Data.Repositories
 
             if (!string.IsNullOrEmpty(filter.OwnerName))
             {
-                query = query.Where(rd => rd.Owner.Name.Contains(filter.RankName));
+                query = query.Where(rd => rd.Owner.Name.Contains(filter.OwnerName));
 
             }
 
             if (!string.IsNullOrEmpty(filter.Gender))
             {
-                query = query.Where(rd => rd.Gender.Contains(filter.Gender));
+                query = query.Where(rd => rd.Gender.Equals(filter.Gender));
             }
 
             var totalRecords = await query.CountAsync();
@@ -79,6 +80,31 @@ namespace KoiMuseum.Data.Repositories
             };
 
             return pageResult;
+        }
+
+        public async Task<RegisterDetailResponse> GetByIdAsynInclued(int registerDetailId)
+        {
+            var registerDetail = await _context.RegisterDetails
+                .Include(rd => rd.Rank)
+                .Include(rd => rd.Owner)
+                .SingleOrDefaultAsync(rd => rd.Id == registerDetailId);
+
+            if (registerDetail == null) return null;
+
+            return new RegisterDetailResponse
+            {
+                Id = registerDetail.Id,
+                Name = registerDetail.Name,
+                OwnerName = registerDetail.Owner.Name,
+                RankName = registerDetail.Rank.Name,
+                Size = registerDetail.Size,
+                Age = registerDetail.Age,
+                Type = registerDetail.Type,
+                Gender = registerDetail.Gender,
+                Status = registerDetail.Status,
+                ImageUrl = registerDetail.ImageUrl,
+                Weight = registerDetail.Weight
+            };
         }
     }
 }

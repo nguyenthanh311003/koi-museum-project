@@ -125,10 +125,14 @@ namespace KoiMuseum.Service
 
         public async Task<IServiceResult> GetById(int id)
         {
-            var registerDetailById = await _unitOfWork.RegisterDetailRepository.GetByIdAsync(id);
-            return registerDetailById == null
-                ? new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG)
-                : new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registerDetailById);
+            var registerDetailById = await _unitOfWork.RegisterDetailRepository.GetByIdAsynInclued(id);
+
+            if (registerDetailById == null)
+            {
+                return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+            }
+
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, registerDetailById);
         }
 
         public async Task<IServiceResult> GetsByRankId(int rankId)

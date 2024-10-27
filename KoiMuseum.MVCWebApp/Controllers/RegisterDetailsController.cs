@@ -106,7 +106,7 @@ namespace KoiMuseum.MVCWebApp.Controllers
                     var result = JsonConvert.DeserializeObject<ServiceResult>(content);
                     if (result != null && result.Data != null)
                     {
-                        var registerDetail = JsonConvert.DeserializeObject<RegisterDetail>(result.Data.ToString());
+                        var registerDetail = JsonConvert.DeserializeObject<RegisterDetailResponse>(result.Data.ToString());
                         return View(registerDetail);
                     }
                 }

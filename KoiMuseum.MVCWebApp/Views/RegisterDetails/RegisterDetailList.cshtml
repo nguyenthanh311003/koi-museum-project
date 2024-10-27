@@ -161,6 +161,26 @@
 <p>
     <a asp-action="CreateRegisterDetail">Create New</a>
 </p>
+
+<form method="GET" action="RegisterDetailList" class="mb-4">
+    <div class="search-bar d-flex justify-content-center">
+        <div class="form-group mx-2">
+            <input type="text" name="rankName" placeholder="Search by Rank Name" value="@ViewBag.RankName" class="form-control" />
+        </div>
+        <div class="form-group mx-2">
+            <input type="text" name="ownerName" placeholder="Search by Owner Name" value="@ViewBag.OwnerName" class="form-control" />
+        </div>
+        <div class="form-group mx-2">
+            <select name="gender" class="form-control">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -198,26 +218,33 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Items)
+        @if (Model?.Items != null && Model.Items.Any())
         {
-        <tr>
-                <td data-label="Name">@item.Size</td>
-                <td data-label="Name">@item.Age</td>
-                <td data-label="Name">@item.Type</td>
-                <td data-label="Name">@item.Gender</td>
-                <td data-label="Name">@item.Status</td>
-                <td data-label="Name">@item.ImageUrl</td>
-                <td data-label="Name">@item.Name</td>
-                <td data-label="Name">@item.Weight</td>
-                <td data-label="Name">@item.OwnerName</td>
-                <td data-label="Name">@item.RankName</td>
-            <td>
-                <a href="@Url.Action("Details", "RegisterDetails", new { id = item.Id })" class="btn btn-info btn-sm">Detail</a> |
-                <a href="@Url.Action("Edit", "RegisterDetails", new { id = item.Id })" class="btn btn-warning btn-sm">Edit</a> |
-                <a href="#" class="delete-link" data-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td data-label="Name">@item.Size</td>
+                    <td data-label="Name">@item.Age</td>
+                    <td data-label="Name">@item.Type</td>
+                    <td data-label="Name">@item.Gender</td>
+                    <td data-label="Name">@item.Status</td>
+                    <td data-label="Name">@item.ImageUrl</td>
+                    <td data-label="Name">@item.Name</td>
+                    <td data-label="Name">@item.Weight</td>
+                    <td data-label="Name">@item.OwnerName</td>
+                    <td data-label="Name">@item.RankName</td>
+                    <td>
+                        <a href="@Url.Action("Details", "RegisterDetails", new { id = item.Id })" class="btn btn-info btn-sm">Detail</a> |
+                        <a href="@Url.Action("Edit", "RegisterDetails", new { id = item.Id })" class="btn btn-warning btn-sm">Edit</a> |
+                        <a href="#" class="delete-link" data-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+
+        } else
+        {
+            <p>No registrations found for this rank.</p>
+        }
     </tbody>
 </table>
 
