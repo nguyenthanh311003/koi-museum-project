@@ -1,5 +1,6 @@
 ﻿using KoiMuseum.Common;
 using KoiMuseum.Data;
+using KoiMuseum.Data.Dtos.Requests.User;
 using KoiMuseum.Data.Models;
 using KoiMuseum.Service.Base;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +21,10 @@ namespace KoiMuseum.Service
         Task<IServiceResult> DeleteById(int id);
         Task<IServiceResult> GetByEmailAsync(string email);
         User GetByEmail(string email);
+        Task<IServiceResult> GetJudgeUser(string queryString);
+        Task<IServiceResult> DeleteJudgeUserById(int id);
+        Task<IServiceResult> UpdateJudge(UpdateJudgeUserRequest judge);
+
     }
 
     public class UserService : IUserService
@@ -152,6 +157,67 @@ namespace KoiMuseum.Service
             }
         }
 
+        public async Task<IServiceResult> GetJudgeUser(string queryString)
+        {
+            {
+                var users = await _unitOfWork.UserRepository.GetJudgeUser(queryString);
+
+                if (users == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG);
+                }
+                else
+                {
+                    return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, users);
+                }
+            }
+        }
+
+        public async Task<IServiceResult> DeleteJudgeUserById(int id)
+        {
+            try
+            {
+                var userById = await _unitOfWork.UserRepository.GetByIdAsync(id);
+
+                if (userById == null)
+                {
+                    return new ServiceResult(Const.WARNING_NO_DATA_CODE, Const.WARNING_NO_DATA_MSG, new User());
+                }
+                else
+                {
+                    Boolean isJudgeDelete = await _unitOfWork.JudgeRepository.RemoveAsync(userById.Judges.FirstOrDefault());
+                    if (!isJudgeDelete)
+                    {
+                        return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, userById);
+                    }
+                    return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, userById);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+        }
+
+        public async Task<IServiceResult> UpdateJudge(UpdateJudgeUserRequest judge)
+        {   try
+            {
+                var result = await _unitOfWork.UserRepository.UpdateJudge(judge);
+                if (result)
+                {
+                    return new ServiceResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, true);
+                }
+                else
+                {
+                    return new ServiceResult(Const.FAIL_CREATE_CODE, Const.FAIL_CREATE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION, ex.ToString());
+            }
+           
+        }
     }
 
     public class JwtService

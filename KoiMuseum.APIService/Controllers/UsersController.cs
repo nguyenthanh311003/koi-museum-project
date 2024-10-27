@@ -66,12 +66,36 @@ namespace KoiMuseum.APIService.Controllers
             return await _userService.DeleteById(id);
         }
 
+        // DELETE: api/Users/5
+        [HttpDelete("Judge/{id}")]
+        public async Task<IServiceResult> DeleteJudgeUser(int id)
+        {
+            return await _userService.DeleteJudgeUserById(id);
+        }
+
+        [HttpGet("JudgeUsers")]
+        public async Task<IServiceResult> GetJudgeUser(string searchTerm = "")
+        {
+            return await _userService.GetJudgeUser(searchTerm);
+        }
+
+        [HttpPut("JudgeUpdate")]
+        public async Task<IServiceResult> JudgeUpdate([FromForm] UpdateJudgeUserRequest judge)
+        {
+            return await _userService.UpdateJudge(judge);
+        }
 
         //=================================================================================================//
         //=================================================================================================//
         //=================================================================================================//
         //=================================================================================================//
+
         //========================================AUTHENTICATION===========================================//
+
+        //=================================================================================================//
+        //=================================================================================================//
+        //=================================================================================================//
+        //=================================================================================================//
 
         [HttpGet("/api/v1/auth")]
         public IActionResult Hello()

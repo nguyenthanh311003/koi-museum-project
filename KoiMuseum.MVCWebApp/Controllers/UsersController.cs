@@ -10,6 +10,10 @@ using KoiMuseum.Common;
 using Newtonsoft.Json;
 using KoiMuseum.Service.Base;
 using System.Text;
+using KoiMuseum.Data.PagingModel;
+using KoiMuseum.Data.Dtos.Requests.User;
+using KoiMuseum.Data.Dtos.Responses.Judge;
+using KoiMuseum.Data.Repositories;
 
 namespace KoiMuseum.MVCWebApp.Controllers
 {
@@ -212,6 +216,55 @@ namespace KoiMuseum.MVCWebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> DeleteJudge(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var judge = await _context.Judges.FirstOrDefaultAsync(x => x.Id == id);
+            if (judge == null)
+            {
+                return NotFound();
+            }
+
+            var users = await _context.Users
+                .Where(u => u.Role == "Judge")
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = $"{u.Id} - {u.Name}"
+                }).ToListAsync();
+
+            var assignedContests = await _context.Contests
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Name,
+                    Text = c.Name
+                }).ToListAsync();
+
+            ViewBag.UserList = users;
+            ViewBag.ContestList = assignedContests;
+
+            return View(judge);
+        }
+
+        // POST: Users/Delete/5
+        [HttpPost, ActionName("DeleteJudgeConfirmed")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteJudgeConfirmed(int id)
+        {
+            var judge = await _context.Judges.FindAsync(id);
+            if (judge != null)
+            {
+                _context.Judges.Remove(judge);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(AdminJudgeList));
+        }
+
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id == id);
@@ -291,5 +344,144 @@ namespace KoiMuseum.MVCWebApp.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("Users/AdminJudgeList")]
+        public async Task<IActionResult> AdminJudgeList(string searchTerm = "", int pageNumber = 1, int pageSize = 10)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                // Construct query parameters for pagination and search
+                var queryString = $"?pageNumber={pageNumber}&pageSize={pageSize}&searchTerm={searchTerm}";
+
+                // Make API request to fetch judge users with search functionality
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "Users/JudgeUsers" + queryString);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+
+                    if (result != null && result.Data != null)
+                    {
+                        var data = JsonConvert.DeserializeObject<List<JudgeUserResponse>>(result.Data.ToString());
+
+                        // Prepare paged result for the view
+                        var pagedResult = new PagedResult<JudgeUserResponse>
+                        {
+                            Items = data.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                            TotalItems = data.Count,
+                            PageNumber = pageNumber,
+                            PageSize = pageSize
+                        };
+
+                        // Pass the paged result and search term to the view
+                        ViewBag.SearchTerm = searchTerm;
+                        ViewBag.PagedResult = pagedResult;
+                        return View(pagedResult);
+                    }
+                }
+
+                // Return empty result if API call fails
+                ViewBag.PagedResult = new PagedResult<JudgeUserResponse>
+                {
+                    Items = new List<JudgeUserResponse>(),
+                    TotalItems = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+
+                return View(new PagedResult<JudgeUserResponse>());
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateJudge([Bind("UserId,Experience,Certifications")] Judge judge)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var currentContest = await _context.Contests.FirstOrDefaultAsync(x => x.Status.Equals("ACTIVE"));
+                    if (currentContest == null)
+                    {
+                        ModelState.AddModelError("", "No active contest found.");
+                        return View(judge);
+                    }
+
+                    // Check if there's already a Judge assigned to the current contest
+                    var existingJudge = await _context.Judges
+                        .FirstOrDefaultAsync(j => j.UserId == judge.UserId && j.AssignedContests == currentContest.Name);
+
+                    if (existingJudge != null)
+                    {
+                        ModelState.AddModelError("", "A judge for the current contest already exists.");
+                        ViewData["Users"] = new SelectList(await _context.Users.Where(u => u.Role == "Judge").ToListAsync(), "Id", "Name");
+                        return View(judge);
+                    }
+
+                    var newJudge = new Judge
+                    {
+                        Experience = judge.Experience,
+                        Certifications = judge.Certifications,
+                        Status = "ACTIVE",  // Hardcoding Status to "ACTIVE"
+                        UserId = judge.UserId,
+                        AssignedContests = currentContest.Name,
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now,
+                        CreatedBy = 1,
+                        UpdatedBy = 1
+                    };
+
+                    _context.Judges.Add(newJudge);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("AdminJudgeList"); // Redirect to the list of judges or another appropriate page
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                }
+            }
+
+            // Load Users list for dropdown in case of failure
+            ViewData["Users"] = new SelectList(await _context.Users.Where(u => u.Role == "Judge").ToListAsync(), "Id", "Name");
+            return View(judge);
+        }
+
+        public async Task<IActionResult> CreateJudge()
+        {
+            ViewData["Users"] = new SelectList(await _context.Users.Where(u => u.Role == "Judge").ToListAsync(), "Id", "Name");
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateJudge(int id)
+        {
+            var judge = await _context.Judges.FirstOrDefaultAsync(x => x.Id == id);
+            if (judge == null)
+            {
+                return NotFound();
+            }
+
+            var users = await _context.Users
+                .Where(u => u.Role == "Judge")
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = $"{u.Id} - {u.Name}"
+                }).ToListAsync();
+
+            var assignedContests = await _context.Contests
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Name,
+                    Text = c.Name
+                }).ToListAsync();
+
+            ViewBag.UserList = users;
+            ViewBag.ContestList = assignedContests;
+
+            return View(judge);
+        }
     }
-}
+    }

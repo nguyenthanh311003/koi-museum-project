@@ -1,0 +1,81 @@
+﻿@model KoiMuseum.Data.PagingModel.PagedResult<KoiMuseum.Data.Dtos.Requests.User.JudgeUserResponse>
+
+@{
+    ViewBag.Title = "Judge Users List";
+}
+
+<h1>Judge Users List</h1>
+
+<a asp-action="CreateJudge" class="btn btn-primary mb-3">Create Judge</a>
+
+<!-- Search form -->
+<form method="get" action="/Users/AdminJudgeList">
+    <div class="form-group">
+        <input type="text" name="searchTerm" class="form-control" placeholder="Search by Name, Contest, Email, or Phone" value="@ViewBag.SearchTerm" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Description</th>
+            <th>Avatar</th>
+            <th>Phone Number</th>
+            <th>Address</th>
+            <th>Role</th>
+            <th>Experience</th>
+            <th>Certifications</th>
+            <th>Assigned Contests</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Items.OrderByDescending(u => u.Id))
+        {
+            if (user.Judges != null && user.Judges.Any())
+            {
+                foreach (var judge in user.Judges)
+                {
+                    <tr>
+                        <td>@judge.Id</td>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                        <td>@user.Description</td>
+                        <td><img src="@user.AvatarUrl" alt="Avatar" width="50" height="50" /></td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.Address</td>
+                        <td>@user.Role</td>
+                        <td>@judge.Experience</td>
+                        <td>@judge.Certifications</td>
+                        <td>@judge.AssignedContests</td>
+                        <td>@judge.Status</td>
+                        <td>
+                            <a asp-action="UpdateJudge" asp-route-id="@judge.Id" class="btn btn-success">Update</a>
+                            <a href="@Url.Action("DeleteJudge", "Users", new { id = judge.Id })" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Pagination controls -->
+@if (Model.TotalItems > Model.PageSize)
+{
+    <nav>
+        <ul class="pagination">
+            @for (var i = 1; i <= Math.Ceiling((double)Model.TotalItems / Model.PageSize); i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="?pageNumber=@i&pageSize=@Model.PageSize&searchTerm=@ViewBag.SearchTerm">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
