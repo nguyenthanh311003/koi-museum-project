@@ -1,9 +1,13 @@
 ﻿using KoiMuseum.Common;
+using KoiMuseum.Data.Dtos.Responses.Ranks;
+using KoiMuseum.Data.Dtos.Responses.RegisterDetails;
 using KoiMuseum.Data.Dtos.Responses.Registration;
 using KoiMuseum.Data.Models;
+using KoiMuseum.Data.PagingModel;
 using KoiMuseum.Service.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Newtonsoft.Json;
 
 namespace KoiMuseum.MVCWebApp.Controllers
@@ -36,6 +40,53 @@ namespace KoiMuseum.MVCWebApp.Controllers
             }
 
             return View(new List<RegistrationResponse>());
+        }
+
+        public IActionResult CreateRegisterDetail()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> RegisterDetailList(string rankName = "", string ownerName = "", string gender = "", int pageNumber = 1, int pageSize = 10)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var queryString = $"?RankName={Uri.EscapeDataString(rankName)}&OwnerName={Uri.EscapeDataString(ownerName)}&Gender={Uri.EscapeDataString(gender)}&pageNumber={pageNumber}&pageSize={pageSize}";
+                var response = await httpClient.GetAsync(Const.APIEndPoint + "RegisterDetails" + queryString);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                    if (result != null && result.Data != null)
+                    {
+                        var data = JsonConvert.DeserializeObject<RegisterDetailPagedResult>(result.Data.ToString());
+                        if (data != null)
+                        {
+                            var totalItems = data.TotalItems;
+
+                            var pagedResult = new PagedResult<RegisterDetailResponse>
+                            {
+                                Items = data.Items,
+                                TotalItems = totalItems,
+                                PageNumber = pageNumber,
+                                PageSize = pageSize
+                            };
+
+                            ViewBag.PagedResult = pagedResult;
+                            return View(pagedResult);
+                        }
+                    }
+                }
+                ViewBag.PagedResult = new PagedResult<RegisterDetailResponse>
+                {
+                    Items = new List<RegisterDetailResponse>(),
+                    TotalItems = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+
+                return View(new PagedResult<RegisterDetailResponse>());
+            }
         }
 
         // GET: RegisterDetails/Details/5

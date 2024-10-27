@@ -1,94 +1,151 @@
 ﻿@model KoiMuseum.Data.Models.Rank
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Rank";
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Edit Rank</h3>
+                </div>
+                <div class="card-body">
+                    <form id="editRankForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="Id" />
 
-<h4>Rank</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Criteria" class="form-label"></label>
+                            <input asp-for="Criteria" class="form-control" />
+                            <span asp-validation-for="Criteria" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Reward" class="form-label"></label>
+                            <input asp-for="Reward" class="form-control" />
+                            <span asp-validation-for="Reward" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MinSize" class="form-label"></label>
+                                <input asp-for="MinSize" class="form-control" />
+                                <span asp-validation-for="MinSize" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MaxSize" class="form-label"></label>
+                                <input asp-for="MaxSize" class="form-control" />
+                                <span asp-validation-for="MaxSize" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MinAge" class="form-label"></label>
+                                <input asp-for="MinAge" class="form-control" />
+                                <span asp-validation-for="MinAge" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MaxAge" class="form-label"></label>
+                                <input asp-for="MaxAge" class="form-control" />
+                                <span asp-validation-for="MaxAge" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="VarietyRestriction" class="form-label"></label>
+                            <input asp-for="VarietyRestriction" class="form-control" />
+                            <span asp-validation-for="VarietyRestriction" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CreatedDate" class="form-label"></label>
+                                <input asp-for="CreatedDate" class="form-control" disabled />
+                                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CreatedBy" class="form-label"></label>
+                                <input asp-for="CreatedBy" class="form-control" disabled />
+                                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UpdatedBy" class="form-label"></label>
+                            <input asp-for="UpdatedBy" class="form-control" />
+                            <span asp-validation-for="UpdatedBy" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <input type="submit" value="Save Changes" class="btn btn-success btn-lg" />
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a class="btn btn-secondary" asp-action="Index"><i class="fas fa-arrow-left"></i> Back to List</a>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Criteria" class="control-label"></label>
-                <input asp-for="Criteria" class="form-control" />
-                <span asp-validation-for="Criteria" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reward" class="control-label"></label>
-                <input asp-for="Reward" class="form-control" />
-                <span asp-validation-for="Reward" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinSize" class="control-label"></label>
-                <input asp-for="MinSize" class="form-control" />
-                <span asp-validation-for="MinSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaxSize" class="control-label"></label>
-                <input asp-for="MaxSize" class="form-control" />
-                <span asp-validation-for="MaxSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MinAge" class="control-label"></label>
-                <input asp-for="MinAge" class="form-control" />
-                <span asp-validation-for="MinAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaxAge" class="control-label"></label>
-                <input asp-for="MaxAge" class="form-control" />
-                <span asp-validation-for="MaxAge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VarietyRestriction" class="control-label"></label>
-                <input asp-for="VarietyRestriction" class="form-control" />
-                <span asp-validation-for="VarietyRestriction" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedDate" class="control-label"></label>
-                <input asp-for="UpdatedDate" class="form-control" />
-                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedBy" class="control-label"></label>
-                <input asp-for="UpdatedBy" class="form-control" />
-                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#editRankForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var formData = {
+                    Id: $('#Id').val(),
+                    Name: $('#Name').val(),
+                    Criteria: $('#Criteria').val(),
+                    Reward: $('#Reward').val(),
+                    Description: $('#Description').val(),
+                    MinSize: $('#MinSize').val(),
+                    MaxSize: $('#MaxSize').val(),
+                    MinAge: $('#MinAge').val(),
+                    MaxAge: $('#MaxAge').val(),
+                    VarietyRestriction: $('#VarietyRestriction').val(),
+                    CreatedDate: $('#CreatedDate').val(),
+                    CreatedBy: $('#CreatedBy').val(),
+                    UpdatedDate: new Date().toISOString(),
+                    UpdatedBy: $('#UpdatedBy').val()
+                };
+
+                $.ajax({
+                    url: 'https://localhost:7028/api/Ranks/' + formData.Id,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function (result) {
+                        alert("Rank updated successfully.");
+                        window.location.href = '@Url.Action("Index")';
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error updating rank: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 }

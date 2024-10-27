@@ -88,6 +88,11 @@ namespace KoiMuseum.MVCWebApp.Controllers
             }
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
+
         //public IActionResult Search(string searchString)
         //{
         // Store the current search string for use in the view
@@ -125,40 +130,40 @@ namespace KoiMuseum.MVCWebApp.Controllers
             return View(id);
         }
 
-        //// GET: Registrations/Create
-        //public async Task<IActionResult> Create()
-        //{
-        //    ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name");
-        //    ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id");
-        //    return View();
-        //}
+        //GET: Registrations/Create
+        /*public async Task<IActionResult> Create()
+        {
+            ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name");
+            ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id");
+            return View();
+        }
 
-        //// POST: Registrations/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        using (var httpClient = new HttpClient())
-        //        {
-        //            var json = JsonConvert.SerializeObject(registration);
-        //            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-        //            var response = await httpClient.PostAsync(Const.APIEndPoint + "Registrations", content);
+        //POST: Registrations/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,ContestId,RegisterDetailId,RegistrationDate,ApprovalDate,RejectedReason,ConfirmationCode,IntroductionOfOwner,IntroductionOfKoi,AdminReviewedBy,CreatedDate,CreatedBy,UpdatedDate,UpdatedBy")] Registration registration)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var json = JsonConvert.SerializeObject(registration);
+                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                    var response = await httpClient.PostAsync(Const.APIEndPoint + "Registrations", content);
 
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                return RedirectToAction(nameof(Index));
-        //            }
-        //        }
-        //    }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
 
-        //    ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
-        //    ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
-        //    return View(registration);
-        //}
+            ViewData["ContestId"] = new SelectList(_context.Contests, "Id", "Name", registration.ContestId);
+            ViewData["RegisterDetailId"] = new SelectList(_context.RegisterDetails, "Id", "Id", registration.RegisterDetailId);
+            return View(registration);
+        }*/
 
-        //   GET: Registrations/Edit/5
+        //GET: Registrations/Edit/5
         //public async Task<IActionResult> Edit(int? id)
         //{
         //    return View(id);

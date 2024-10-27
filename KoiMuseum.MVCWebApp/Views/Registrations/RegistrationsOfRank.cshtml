@@ -8,7 +8,9 @@
 
 @if (Model?.Items != null && Model.Items.Any())
 {
-    <h1>There are @ViewBag.RegistrationCount contestants participating</h1>
+    <h1>There are @ViewBag.RegistrationCount contestants participating
+        <a href="/RegisterDetails/Create" class="btn btn-primary" style="float: right;">Create New</a>
+    </h1>
     <div class="search-container">
         <form method="GET" action="/Registrations/RegistrationsOfRank">
             <input type="hidden" name="contestName" value="@contestName" />

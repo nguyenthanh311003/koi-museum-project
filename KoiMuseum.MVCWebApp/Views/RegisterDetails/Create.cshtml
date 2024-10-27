@@ -1,4 +1,4 @@
-﻿@model KoiMuseum.Data.Models.RegisterDetail
+﻿@model KoiMuseum.Data.Dtos.Requests.CombineRegisterRequest.RegisterViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,38 +13,54 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="RankId" class="control-label"></label>
-                <select asp-for="RankId" class ="form-control" asp-items="ViewBag.RankId"></select>
+                <label asp-for="CreateRegisterDetailRequest.Size" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.Size" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.Size" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OwnerId" class="control-label"></label>
-                <select asp-for="OwnerId" class ="form-control" asp-items="ViewBag.OwnerId"></select>
+                <label asp-for="CreateRegisterDetailRequest.Age" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.Age" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.Age" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Size" class="control-label"></label>
-                <input asp-for="Size" class="form-control" />
-                <span asp-validation-for="Size" class="text-danger"></span>
+                <label asp-for="CreateRegisterDetailRequest.Type" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.Type" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.Type" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" class="form-control" />
-                <span asp-validation-for="Age" class="text-danger"></span>
+                <label asp-for="CreateRegisterDetailRequest.Gender" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.Gender" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.Gender" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+                <label asp-for="CreateRegisterDetailRequest.ImageUrl" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.ImageUrl" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.ImageUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UpdatedDate" class="control-label"></label>
-                <input asp-for="UpdatedDate" class="form-control" />
-                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+                <label asp-for="CreateRegisterDetailRequest.Name" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.Name" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UpdatedBy" class="control-label"></label>
-                <input asp-for="UpdatedBy" class="form-control" />
-                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
+                <label asp-for="CreateRegisterDetailRequest.Weight" class="control-label"></label>
+                <input asp-for="CreateRegisterDetailRequest.Weight" class="form-control" />
+                <span asp-validation-for="CreateRegisterDetailRequest.Weight" class="text-danger"></span>
             </div>
+
+            <!-- Trường nhập cho Registration -->
+            <h4>Registration</h4>
+            <div class="form-group">
+                <label asp-for="createRegistrationRequest.IntroductionOfOwner" class="control-label"></label>
+                <input asp-for="createRegistrationRequest.IntroductionOfOwner" class="form-control" />
+                <span asp-validation-for="createRegistrationRequest.IntroductionOfOwner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="createRegistrationRequest.IntroductionOfKoi" class="control-label"></label>
+                <input asp-for="createRegistrationRequest.IntroductionOfKoi" class="form-control" />
+                <span asp-validation-for="createRegistrationRequest.IntroductionOfKoi" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -57,5 +73,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
